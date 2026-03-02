@@ -9,8 +9,8 @@ export default class FluxerMessageTransformer implements MessageTransformer<
     Message,
     WebhookMessageData
 > {
-    public async transformMessage(message: Message): Promise<WebhookMessageData> {
-        const sanitizedContent = breakMentions(
+    private sanitizeContent(message: Message): string {
+        return breakMentions(
             sanitizeMentions(message.content, {
                 resolveUser: (id) => {
                     const user = message.client.users.get(id);
@@ -27,6 +27,10 @@ export default class FluxerMessageTransformer implements MessageTransformer<
                 },
             })
         );
+    }
+
+    public async transformMessage(message: Message): Promise<WebhookMessageData> {
+        const sanitizedContent = this.sanitizeContent(message);
 
         const attachments = message.attachments
             .filter(
@@ -53,12 +57,31 @@ export default class FluxerMessageTransformer implements MessageTransformer<
             });
         });
 
+        const embeds: WebhookEmbed[] = message.embeds.map((embed) =>
+            WebhookEmbed.fromFluxerEmbed(embed)
+        );
+
+        if (message.referencedMessage) {
+            const content = this.sanitizeContent(message.referencedMessage);
+            embeds.unshift(
+                new WebhookEmbed({
+                    description: `${content}`,
+                    color: 0x252529,
+                    author: {
+                        name: message.referencedMessage.author.username + ' ↩️',
+                        iconURL: message.referencedMessage.author.avatarURL() || undefined,
+                    },
+                    timestamp: null,
+                })
+            );
+        }
+
         return {
             content: sanitizedContent,
             username: message.author.username,
             avatarURL: message.author.avatarURL() || '',
             attachments: attachments,
-            embeds: message.embeds.map((embed) => WebhookEmbed.fromFluxerEmbed(embed)),
+            embeds,
         };
     }
 }

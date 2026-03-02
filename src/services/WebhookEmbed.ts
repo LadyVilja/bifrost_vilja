@@ -158,7 +158,7 @@ export default class WebhookEmbed {
             .setDescription(this.description)
             .setURL(this.url)
             .setColor(this.color)
-            .setTimestamp(this.timestamp ?? undefined);
+            .setTimestamp(this.timestamp ?? null);
 
         if (this.fields.length) {
             builder.addFields(
