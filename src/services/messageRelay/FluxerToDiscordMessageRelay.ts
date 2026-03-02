@@ -1,6 +1,7 @@
 import { Message } from '@fluxerjs/core';
 import MessageRelay from './MessageRelay';
 import logger from '../../utils/logging/logger';
+import { formatJoinMessage } from '../../utils/formatJoinMessage';
 
 export default class FluxerToDiscordMessageRelay extends MessageRelay<Message> {
     public async relayMessage(message: Message): Promise<void> {
@@ -19,6 +20,18 @@ export default class FluxerToDiscordMessageRelay extends MessageRelay<Message> {
                 logger.warn(
                     `No webhook found for linked channel ${linkedChannel.linkId}, cannot relay message`
                 );
+                return;
+            }
+
+            if (message.type === 7) {
+                await webhookService.sendMessageViaDiscordWebhook(webhook, {
+                    content: formatJoinMessage(
+                        message.author.username + '#' + message.author.discriminator,
+                        'fluxer'
+                    ),
+                    username: message.client.user?.username || 'Bifröst',
+                    avatarURL: message.client.user?.avatarURL() || '',
+                });
                 return;
             }
 

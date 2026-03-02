@@ -1,6 +1,7 @@
-import { Message, OmitPartialGroupDMChannel } from 'discord.js';
+import { Message, MessageType, OmitPartialGroupDMChannel } from 'discord.js';
 import MessageRelay from './MessageRelay';
 import logger from '../../utils/logging/logger';
+import { formatJoinMessage } from '../../utils/formatJoinMessage';
 
 export default class DiscordToFluxerMessageRelay extends MessageRelay<
     OmitPartialGroupDMChannel<Message<boolean>>
@@ -21,6 +22,15 @@ export default class DiscordToFluxerMessageRelay extends MessageRelay<
                 logger.warn(
                     `No webhook found for linked channel ${linkedChannel.linkId}, cannot relay message`
                 );
+                return;
+            }
+
+            if (message.type === MessageType.UserJoin) {
+                await webhookService.sendMessageViaFluxerWebhook(webhook, {
+                    content: formatJoinMessage(message.author.username, 'discord'),
+                    username: message.client.user?.username || 'Bifröst',
+                    avatarURL: message.client.user?.avatarURL() || '',
+                });
                 return;
             }
 

@@ -1,4 +1,4 @@
-import { Client, Events, PartialMessage, TextChannel } from '@fluxerjs/core';
+import { Client, Events, Message, PartialMessage, TextChannel } from '@fluxerjs/core';
 import CommandRegistry from './commands/CommandRegistry';
 import PingFluxerCommandHandler from './commands/fluxer/handlers/PingFluxerCommandHandler';
 import { isCommandString, parseCommandString } from './commands/parseCommandString';
