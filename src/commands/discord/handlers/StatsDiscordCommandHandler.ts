@@ -3,6 +3,7 @@ import DiscordCommandHandler, { DiscordCommandHandlerMessage } from '../DiscordC
 import { formatDuration } from '../../../utils/duration';
 import { getHeapUsageMB } from '../../../utils/memory';
 import StatsService from '../../../services/statsService/StatsService';
+import { defaultEmbedColor } from '../../../utils/embeds';
 
 export default class StatsDiscordCommandHandler extends DiscordCommandHandler {
     constructor(
@@ -53,7 +54,7 @@ export default class StatsDiscordCommandHandler extends DiscordCommandHandler {
                         { name: 'Uptime', value: readableUptime, inline: true },
                         { name: 'Memory Usage', value: `${usedHeap} MB`, inline: true }
                     )
-                    .setColor(0x252529),
+                    .setColor(defaultEmbedColor),
             ],
         });
     }

@@ -3,6 +3,7 @@ import FluxerCommandHandler from '../FluxerCommandHandler';
 import { formatDuration } from '../../../utils/duration';
 import StatsService from '../../../services/statsService/StatsService';
 import { getHeapUsageMB } from '../../../utils/memory';
+import { defaultEmbedColor } from '../../../utils/embeds';
 
 export default class StatsFluxerCommandHandler extends FluxerCommandHandler {
     constructor(
@@ -53,7 +54,7 @@ export default class StatsFluxerCommandHandler extends FluxerCommandHandler {
                         { name: 'Uptime', value: readableUptime, inline: true },
                         { name: 'Memory Usage', value: `${usedHeap} MB`, inline: true }
                     )
-                    .setColor(0x252529),
+                    .setColor(defaultEmbedColor),
             ],
         });
     }

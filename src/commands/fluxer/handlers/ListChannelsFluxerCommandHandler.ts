@@ -1,8 +1,9 @@
-import { Client, Message, PermissionFlags } from '@fluxerjs/core';
+import { Client, EmbedBuilder, Message, PermissionFlags } from '@fluxerjs/core';
 import { LinkService } from '../../../services/LinkService';
 import FluxerCommandHandler from '../FluxerCommandHandler';
 import logger from '../../../utils/logging/logger';
-import { getCommandUsage } from '../../../commands/commandList';
+import { getFluxerCommandUsage } from '../../../commands/commandList';
+import { defaultEmbedColor } from '../../../utils/embeds';
 
 export default class ListChannelsFluxerCommandHandler extends FluxerCommandHandler {
     private readonly linkService: LinkService;
@@ -26,7 +27,7 @@ export default class ListChannelsFluxerCommandHandler extends FluxerCommandHandl
             if (!hasPerms) return;
 
             if (args.length > 0 && args[0].toLowerCase() === 'help') {
-                const usage = getCommandUsage(command, 'fluxer');
+                const usage = getFluxerCommandUsage(command);
                 await message.reply(usage);
                 return;
             }
@@ -47,7 +48,14 @@ export default class ListChannelsFluxerCommandHandler extends FluxerCommandHandl
                 )
                 .join('\n');
 
-            await message.reply(`**Linked Channels:**\n${linksList}`);
+            await message.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setTitle('Linked Channels')
+                        .setDescription(linksList)
+                        .setColor(defaultEmbedColor),
+                ],
+            });
         } catch (error: any) {
             await message.reply(`Failed to list channel links: ${error.message}`);
             logger.error('Error listing channel links:', error);

@@ -1,8 +1,9 @@
-import { Client, PermissionFlagsBits } from 'discord.js';
+import { Client, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import { LinkService } from '../../../services/LinkService';
 import DiscordCommandHandler, { DiscordCommandHandlerMessage } from '../DiscordCommandHandler';
 import logger from '../../../utils/logging/logger';
-import { getCommandUsage } from '../../../commands/commandList';
+import { getDiscordCommandUsage } from '../../../commands/commandList';
+import { defaultEmbedColor } from '../../../utils/embeds';
 
 export default class ListChannelsDiscordCommandHandler extends DiscordCommandHandler {
     private readonly linkService: LinkService;
@@ -26,7 +27,7 @@ export default class ListChannelsDiscordCommandHandler extends DiscordCommandHan
             if (!hasPerms) return;
 
             if (args.length > 0 && args[0].toLowerCase() === 'help') {
-                const usage = getCommandUsage(command, 'discord');
+                const usage = getDiscordCommandUsage(command);
                 await message.reply(usage);
                 return;
             }
@@ -47,7 +48,14 @@ export default class ListChannelsDiscordCommandHandler extends DiscordCommandHan
                 )
                 .join('\n');
 
-            await message.reply(`**Linked Channels:**\n${linksList}`);
+            await message.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setTitle('Linked Channels')
+                        .setDescription(linksList)
+                        .setColor(defaultEmbedColor),
+                ],
+            });
         } catch (error: any) {
             await message.reply(`Failed to list channel links: ${error.message}`);
             logger.error('Error listing channel links: ', error);

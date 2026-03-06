@@ -1,4 +1,11 @@
+import { EmbedBuilder as DiscordEmbedBuilder, MessageReplyOptions } from 'discord.js';
 import { COMMAND_PREFIX } from '../utils/env';
+import {
+    MessageSendOptions,
+    ReplyOptions,
+    EmbedBuilder as FluxerEmbedBuilder,
+} from '@fluxerjs/core';
+import { defaultEmbedColor } from '../utils/embeds';
 
 export interface CommandInfo {
     description: string;
@@ -95,13 +102,36 @@ const commandList: Command[] = [
     },
 ];
 
-export const getCommandUsage = (commandName: string, platform: CommandPlatform): string => {
+function getStringCommandUsage(commandName: string, platform: CommandPlatform): string {
     const command = commandList.find((cmd) => cmd.name === commandName);
     if (!command) return `Command \`${commandName}\` not found.`;
     const commandInfo = platform === 'discord' ? command.discord : command.fluxer;
     const baseMessage = `Usage: \`${COMMAND_PREFIX}${commandName} ${commandInfo.usageArgs.join(' ')}\``;
     return `${baseMessage}\n> ${commandInfo.description}`;
-};
+}
+
+export function getDiscordCommandUsage(commandName: string): MessageReplyOptions {
+    const usageMessage = getStringCommandUsage(commandName, 'discord');
+    return {
+        embeds: [
+            new DiscordEmbedBuilder()
+                .setTitle('Command Usage')
+                .setDescription(usageMessage)
+                .setColor(defaultEmbedColor),
+        ],
+    };
+}
+export function getFluxerCommandUsage(commandName: string): ReplyOptions & MessageSendOptions {
+    const usageMessage = getStringCommandUsage(commandName, 'fluxer');
+    return {
+        embeds: [
+            new FluxerEmbedBuilder()
+                .setTitle('Command Usage')
+                .setDescription(usageMessage)
+                .setColor(defaultEmbedColor),
+        ],
+    };
+}
 
 export const getHelpMessage = (platform: CommandPlatform): string => {
     function getHelpLine(command: Command): string {

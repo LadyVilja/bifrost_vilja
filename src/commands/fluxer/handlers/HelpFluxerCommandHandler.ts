@@ -1,6 +1,7 @@
-import { Client, Message } from '@fluxerjs/core';
+import { Client, EmbedBuilder, Message } from '@fluxerjs/core';
 import FluxerCommandHandler from '../FluxerCommandHandler';
 import { getHelpMessage } from '../../../commands/commandList';
+import { defaultEmbedColor } from '../../../utils/embeds';
 
 export default class HelpFluxerCommandHandler extends FluxerCommandHandler {
     constructor(client: Client) {
@@ -8,6 +9,13 @@ export default class HelpFluxerCommandHandler extends FluxerCommandHandler {
     }
 
     async handleCommand(message: Message, command: string, ...args: string[]): Promise<void> {
-        await message.reply(getHelpMessage('fluxer'));
+        await message.reply({
+            embeds: [
+                new EmbedBuilder()
+                    .setTitle('Bifröst Help')
+                    .setDescription(getHelpMessage('fluxer'))
+                    .setColor(defaultEmbedColor),
+            ],
+        });
     }
 }

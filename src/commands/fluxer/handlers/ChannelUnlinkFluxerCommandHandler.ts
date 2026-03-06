@@ -2,7 +2,8 @@ import { Client, GuildMember, Message, PermissionFlags } from '@fluxerjs/core';
 import { LinkService } from '../../../services/LinkService';
 import FluxerCommandHandler from '../FluxerCommandHandler';
 import logger from '../../../utils/logging/logger';
-import { getCommandUsage } from '../../../commands/commandList';
+import { getFluxerCommandUsage } from '../../../commands/commandList';
+import { createFluxerErrorReply, createFluxerSuccessReply } from '../../../utils/embeds';
 
 export default class ChannelUnlinkFluxerCommandHandler extends FluxerCommandHandler {
     private readonly linkService: LinkService;
@@ -25,7 +26,7 @@ export default class ChannelUnlinkFluxerCommandHandler extends FluxerCommandHand
         if (!hasPerms) return;
 
         if (args.length < 1 || args[0].toLowerCase() === 'help') {
-            const usage = getCommandUsage(command, 'fluxer');
+            const usage = getFluxerCommandUsage(command);
             await message.reply(usage);
             return;
         }
@@ -34,9 +35,20 @@ export default class ChannelUnlinkFluxerCommandHandler extends FluxerCommandHand
 
         try {
             await this.linkService.removeChannelLinkForFluxer(message.guildId!, linkId);
-            await message.reply(`Successfully unlinked channel link \`${linkId}\`.`);
+            await message.reply(
+                createFluxerSuccessReply(
+                    `Successfully unlinked channel link \`${linkId}\`.`,
+                    'Channel Unlinked'
+                )
+            );
         } catch (error: any) {
-            await message.reply(`Failed to unlink channel: ${error.message}`);
+            await message.reply(
+                createFluxerErrorReply(
+                    'An error occurred while unlinking the channel: ' + error.message ||
+                        'An error occurred while unlinking the channel.',
+                    'Failed to Unlink Channel'
+                )
+            );
             logger.error('Error unlinking channel:', error);
         }
     }

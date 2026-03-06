@@ -3,8 +3,9 @@ import { LinkService } from '../../../services/LinkService';
 import FluxerCommandHandler from '../FluxerCommandHandler';
 import logger from '../../../utils/logging/logger';
 import { WebhookService } from '../../../services/WebhookService';
-import { getCommandUsage } from '../../../commands/commandList';
+import { getFluxerCommandUsage } from '../../../commands/commandList';
 import DiscordEntityResolver from '../../../services/entityResolver/DiscordEntityResolver';
+import { createFluxerErrorReply, createFluxerSuccessReply } from '../../../utils/embeds';
 
 export default class ChannelLinkFluxerCommandHandler extends FluxerCommandHandler {
     private readonly linkService: LinkService;
@@ -36,7 +37,7 @@ export default class ChannelLinkFluxerCommandHandler extends FluxerCommandHandle
         if (!hasPerms) return;
 
         if (args.length < 1 || args[0].toLowerCase() == 'help') {
-            const usage = getCommandUsage(command, 'fluxer');
+            const usage = getFluxerCommandUsage(command);
             await message.reply(usage);
             return;
         }
@@ -50,7 +51,12 @@ export default class ChannelLinkFluxerCommandHandler extends FluxerCommandHandle
                 throw new Error('Guild not linked');
             }
         } catch (error: any) {
-            await message.reply(`Failed to get guild link: ${error.message}`);
+            await message.reply(
+                createFluxerErrorReply(
+                    `Failed to get guild link: ${error.message}`,
+                    'Error Fetching Guild Link'
+                )
+            );
             logger.error('Error fetching guild link:', error);
             return;
         }
@@ -65,7 +71,10 @@ export default class ChannelLinkFluxerCommandHandler extends FluxerCommandHandle
             }
         } catch (error: any) {
             await message.reply(
-                `Linking failed: Could not find Discord channel with ID \`${discordChannelId}\`.`
+                createFluxerErrorReply(
+                    `Linking failed: Could not find Discord channel with ID \`${discordChannelId}\`.`,
+                    'Discord Channel Not Found'
+                )
             );
             logger.error('Error fetching Discord channel:', error);
             return;
@@ -78,7 +87,12 @@ export default class ChannelLinkFluxerCommandHandler extends FluxerCommandHandle
                 `Fluxer Bridge Webhook for channel ${message.channelId}`
             );
         } catch (error: any) {
-            await message.reply(`Failed to create Discord webhook: ${error.message}`);
+            await message.reply(
+                createFluxerErrorReply(
+                    `Failed to create Discord webhook: ${error.message}`,
+                    'Error Creating Discord Webhook'
+                )
+            );
             logger.error('Error creating Discord webhook:', error);
             return;
         }
@@ -90,7 +104,12 @@ export default class ChannelLinkFluxerCommandHandler extends FluxerCommandHandle
                 `Discord Bridge Webhook for channel ${message.channelId}`
             );
         } catch (error: any) {
-            await message.reply(`Failed to create Fluxer webhook: ${error.message}`);
+            await message.reply(
+                createFluxerErrorReply(
+                    `Failed to create Fluxer webhook: ${error.message}`,
+                    'Error Creating Fluxer Webhook'
+                )
+            );
             logger.error('Error creating Fluxer webhook:', error);
             return;
         }
@@ -106,10 +125,18 @@ export default class ChannelLinkFluxerCommandHandler extends FluxerCommandHandle
                 fluxerWebhookToken: fluxerWebhook.token,
             });
             await message.reply(
-                `Successfully linked this Fluxer channel to Discord channel ID \`${discordChannelId}\`.`
+                createFluxerSuccessReply(
+                    `Successfully linked this Fluxer channel to Discord channel ID \`${discordChannelId}\`.`,
+                    'Channel Linked'
+                )
             );
         } catch (error: any) {
-            await message.reply(`Failed to create channel link: ${error.message}`);
+            await message.reply(
+                createFluxerErrorReply(
+                    `Failed to create channel link: ${error.message}`,
+                    'Error Creating Channel Link'
+                )
+            );
             logger.error('Error creating channel link:', error);
         }
     }

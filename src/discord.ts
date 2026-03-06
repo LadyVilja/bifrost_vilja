@@ -21,6 +21,7 @@ import DiscordMessageTransformer from './services/messageTransformer/DiscordMess
 import FluxerStatsService from './services/statsService/FluxerStatsService';
 import DiscordStatsService from './services/statsService/DiscordStatsService';
 import StatsDiscordCommandHandler from './commands/discord/handlers/StatsDiscordCommandHandler';
+import { createDiscordErrorReply } from './utils/embeds';
 
 const startDiscordClient = async ({
     linkService,
@@ -204,7 +205,10 @@ const startDiscordClient = async ({
             const handler = commandRegistry.getCommandHandler(command);
             if (!handler) {
                 await message.reply(
-                    `Unknown command: \`${command}\`\nUse \`${COMMAND_PREFIX}help\` to see available commands.`
+                    createDiscordErrorReply(
+                        `Unknown command: \`${command}\`.\nUse \`${COMMAND_PREFIX}help\` to see the list of available commands.`,
+                        'Unknown Command'
+                    )
                 );
                 return;
             }

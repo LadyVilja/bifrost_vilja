@@ -2,7 +2,8 @@ import { LinkService } from '../../../services/LinkService';
 import DiscordCommandHandler, { DiscordCommandHandlerMessage } from '../DiscordCommandHandler';
 import { Client, PermissionFlagsBits } from 'discord.js';
 import logger from '../../../utils/logging/logger';
-import { getCommandUsage } from '../../../commands/commandList';
+import { getDiscordCommandUsage } from '../../../commands/commandList';
+import { createDiscordErrorReply, createDiscordSuccessReply } from '../../../utils/embeds';
 
 export default class GuildUnlinkDiscordCommandHandler extends DiscordCommandHandler {
     private readonly linkService: LinkService;
@@ -27,16 +28,26 @@ export default class GuildUnlinkDiscordCommandHandler extends DiscordCommandHand
         if (!hasPerms) return;
 
         if (args.length > 0 && args[0].toLowerCase() === 'help') {
-            const usage = getCommandUsage(command, 'discord');
+            const usage = getDiscordCommandUsage(command);
             await message.reply(usage);
             return;
         }
 
         try {
             await this.linkService.removeGuildLinkFromDiscord(discordGuildId);
-            await message.reply(`Successfully unlinked guild \`${discordGuildId}\`.`);
+            await message.reply(
+                createDiscordSuccessReply(
+                    `Successfully unlinked this Discord guild from its linked Fluxer guild.`,
+                    'Guild Unlinked'
+                )
+            );
         } catch (error: any) {
-            await message.reply(`Failed to unlink guild: ${error.message}`);
+            await message.reply(
+                createDiscordErrorReply(
+                    `Failed to unlink guild: ${error.message}`,
+                    'Error Unlinking Guild'
+                )
+            );
             logger.error('Error unlinking guild:', error);
         }
     }

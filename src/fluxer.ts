@@ -22,6 +22,7 @@ import FluxerMessageTransformer from './services/messageTransformer/FluxerMessag
 import StatsFluxerCommandHandler from './commands/fluxer/handlers/StatsFluxerCommandHandler';
 import DiscordStatsService from './services/statsService/DiscordStatsService';
 import FluxerStatsService from './services/statsService/FluxerStatsService';
+import { createFluxerErrorReply } from './utils/embeds';
 
 const startFluxerClient = async ({
     linkService,
@@ -192,7 +193,9 @@ const startFluxerClient = async ({
             const handler = commandRegistry.getCommandHandler(command);
             if (!handler) {
                 await message.reply(
-                    `Unknown command: \`${command}\`\nUse \`${COMMAND_PREFIX}help\` to see available commands.`
+                    createFluxerErrorReply(
+                        `Unknown command: \`${command}\`\nUse \`${COMMAND_PREFIX}help\` to see available commands.`
+                    )
                 );
                 return;
             }

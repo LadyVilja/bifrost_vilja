@@ -1,6 +1,7 @@
-import { Client } from 'discord.js';
+import { Client, EmbedBuilder } from 'discord.js';
 import DiscordCommandHandler, { DiscordCommandHandlerMessage } from '../DiscordCommandHandler';
 import { getHelpMessage } from '../../../commands/commandList';
+import { defaultEmbedColor } from '../../../utils/embeds';
 
 export default class HelpDiscordCommandHandler extends DiscordCommandHandler {
     constructor(client: Client) {
@@ -12,6 +13,13 @@ export default class HelpDiscordCommandHandler extends DiscordCommandHandler {
         command: string,
         ...args: string[]
     ): Promise<void> {
-        await message.reply(getHelpMessage('discord'));
+        await message.reply({
+            embeds: [
+                new EmbedBuilder()
+                    .setTitle('Bifröst Help')
+                    .setDescription(getHelpMessage('discord'))
+                    .setColor(defaultEmbedColor),
+            ],
+        });
     }
 }
