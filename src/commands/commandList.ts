@@ -79,12 +79,12 @@ const commandList: Command[] = [
     {
         name: 'unlinkchannel',
         discord: {
-            description: 'Unlinks a channel link. Get the link ID from the listchannels command.',
-            usageArgs: ['<link-id>'],
+            description: 'Unlinks the current Discord channel from its linked Fluxer channel.',
+            usageArgs: [],
         },
         fluxer: {
-            description: 'Unlinks a channel link. Get the link ID from the listchannels command.',
-            usageArgs: ['<link-id>'],
+            description: 'Unlinks the current Fluxer channel from its linked Discord channel.',
+            usageArgs: [],
         },
     },
     {

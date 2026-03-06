@@ -97,13 +97,13 @@ export class LinkService {
         });
     }
 
-    async removeChannelLinkForDiscord(discordGuildId: string, linkId: string) {
+    async removeChannelLinkForDiscord(discordGuildId: string, channelId: string) {
         const guildLink = await this.guildRepo.findByDiscordGuildId(discordGuildId);
         if (!guildLink) {
             throw new Error('Guild not linked');
         }
 
-        const channelLink = await this.channelRepo.findByGuildAndLinkId(guildLink.id, linkId);
+        const channelLink = await this.channelRepo.findByDiscordChannelId(channelId);
 
         if (!channelLink) {
             throw new Error('Link not found');
@@ -114,13 +114,13 @@ export class LinkService {
         return channelLink;
     }
 
-    async removeChannelLinkForFluxer(fluxerGuildId: string, linkId: string) {
+    async removeChannelLinkForFluxer(fluxerGuildId: string, channelId: string) {
         const guildLink = await this.guildRepo.findByFluxerGuildId(fluxerGuildId);
         if (!guildLink) {
             throw new Error('Guild not linked');
         }
 
-        const channelLink = await this.channelRepo.findByGuildAndLinkId(guildLink.id, linkId);
+        const channelLink = await this.channelRepo.findByFluxerChannelId(channelId);
 
         if (!channelLink) {
             throw new Error('Link not found');

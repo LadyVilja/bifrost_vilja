@@ -25,21 +25,16 @@ export default class ChannelUnlinkFluxerCommandHandler extends FluxerCommandHand
         );
         if (!hasPerms) return;
 
-        if (args.length < 1 || args[0].toLowerCase() === 'help') {
+        if (args.length > 0 && args[0].toLowerCase() === 'help') {
             const usage = getFluxerCommandUsage(command);
             await message.reply(usage);
             return;
         }
 
-        const linkId = args[0];
-
         try {
-            await this.linkService.removeChannelLinkForFluxer(message.guildId!, linkId);
+            await this.linkService.removeChannelLinkForFluxer(message.guildId!, message.channelId);
             await message.reply(
-                createFluxerSuccessReply(
-                    `Successfully unlinked channel link \`${linkId}\`.`,
-                    'Channel Unlinked'
-                )
+                createFluxerSuccessReply(`Successfully unlinked channel link.`, 'Channel Unlinked')
             );
         } catch (error: any) {
             await message.reply(

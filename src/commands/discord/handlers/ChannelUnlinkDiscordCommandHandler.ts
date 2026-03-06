@@ -25,21 +25,16 @@ export default class ChannelUnlinkDiscordCommandHandler extends DiscordCommandHa
         );
         if (!hasPerms) return;
 
-        if (args.length < 1 || args[0].toLowerCase() === 'help') {
+        if (args.length > 0 && args[0].toLowerCase() === 'help') {
             const usage = getDiscordCommandUsage(command);
             await message.reply(usage);
             return;
         }
 
-        const linkId = args[0];
-
         try {
-            await this.linkService.removeChannelLinkForDiscord(message.guildId!, linkId);
+            await this.linkService.removeChannelLinkForDiscord(message.guildId!, message.channelId);
             await message.reply(
-                createDiscordSuccessReply(
-                    `Successfully unlinked channel link \`${linkId}\`.`,
-                    'Channel Unlinked'
-                )
+                createDiscordSuccessReply(`Successfully unlinked channel link.`, 'Channel Unlinked')
             );
         } catch (error: any) {
             await message.reply(
