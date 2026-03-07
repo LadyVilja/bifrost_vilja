@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Partials, TextChannel } from 'discord.js';
+import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import { COMMAND_PREFIX, DISCORD_BOT_TOKEN } from './utils/env';
 import logger from './utils/logging/logger';
 import CommandRegistry from './commands/CommandRegistry';
@@ -220,10 +220,13 @@ const startDiscordClient = async ({
             }
         }
 
-        if (
-            message.channel instanceof TextChannel &&
-            !isCommandString(message.content, COMMAND_PREFIX)
-        ) {
+        const isValidWebhookChannel =
+            message.channel &&
+            message.channel.isTextBased() &&
+            !message.channel.isDMBased() &&
+            !message.channel.isThread();
+
+        if (isValidWebhookChannel && !isCommandString(message.content, COMMAND_PREFIX)) {
             await messageRelay.relayMessage(message);
         }
     });

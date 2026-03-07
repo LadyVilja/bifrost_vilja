@@ -4,14 +4,8 @@ import {
     Webhook as FluxerWebhook,
     MessageAttachmentFlags,
 } from '@fluxerjs/core';
-import {
-    AttachmentBuilder,
-    Client as DiscordClient,
-    TextChannel as DiscordTextChannel,
-    WebhookClient,
-} from 'discord.js';
+import { AttachmentBuilder, Client as DiscordClient, WebhookClient } from 'discord.js';
 import logger from '../utils/logging/logger';
-import { LinkService } from './LinkService';
 import WebhookEmbed from './WebhookEmbed';
 
 type DiscordWebhook = WebhookClient;
@@ -52,7 +46,9 @@ export class WebhookService {
 
         try {
             const channel = await this.discordClient.channels.fetch(channelId);
-            if (!channel || !(channel instanceof DiscordTextChannel)) {
+            const isValidWebhookChannel =
+                channel && channel.isTextBased() && !channel.isDMBased() && !channel.isThread();
+            if (!isValidWebhookChannel) {
                 throw new Error('Invalid Discord channel');
             }
 
