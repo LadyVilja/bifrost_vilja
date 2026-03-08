@@ -1,4 +1,4 @@
-import { Client, EmbedBuilder, Events, Message, PartialMessage, TextChannel } from '@fluxerjs/core';
+import { Client, EmbedBuilder, Events, PartialMessage, TextChannel } from '@fluxerjs/core';
 import CommandRegistry from './commands/CommandRegistry';
 import PingFluxerCommandHandler from './commands/fluxer/handlers/PingFluxerCommandHandler';
 import { isCommandString, parseCommandString } from './commands/parseCommandString';
@@ -100,10 +100,6 @@ const startFluxerClient = async ({
     client.once(Events.Ready, () => {
         logger.info('Fluxer bot is ready!');
         logger.info(`Fluxer bot is in ${client.guilds.size} guilds`);
-
-        setInterval(async () => {
-            await healthCheckService.pushFluxerHealthStatus();
-        }, 30_000);
     });
 
     client.on(Events.Error, (error) => {
@@ -170,7 +166,7 @@ const startFluxerClient = async ({
         }
     });
 
-    client.on(Events.MessageUpdate, async (oldMessage, newMessage) => {
+    client.on(Events.MessageUpdate, async (_oldMessage, newMessage) => {
         const linkedMessage = await linkService.getMessageLinkByFluxerMessageId(newMessage.id);
         if (!linkedMessage) return;
 
