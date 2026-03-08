@@ -150,6 +150,8 @@ export const getHelpMessage = (platform: CommandPlatform): string => {
 ${commandList.map((cmd) => getHelpLine(cmd)).join('\n')}
 
 Use \`${COMMAND_PREFIX}<command>\` to execute a command.
+
+-# [Privacy Policy](https://bifrost-bot.com/legal/privacy) | [Terms of Service](https://bifrost-bot.com/legal/tos) | [Support Server](https://fluxer.gg/TN8FkpdQ) | [GitHub](https://github.com/KartoffelChipss/bifrost)
     `;
 
     return helpMessage;
