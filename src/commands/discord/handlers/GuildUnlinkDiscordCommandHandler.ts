@@ -48,7 +48,14 @@ export default class GuildUnlinkDiscordCommandHandler extends DiscordCommandHand
                     'Error Unlinking Guild'
                 )
             );
-            logger.error('Error unlinking guild:', error);
+            logger.error(
+                'Failed unlinking guild from Discord command',
+                {
+                    command,
+                    discordGuildId,
+                },
+                error
+            );
         }
     }
 }

@@ -12,7 +12,15 @@ export default abstract class FluxerCommandHandler extends CommandHandler<Client
         try {
             authorMember = (await message.guild?.fetchMember(message.author.id)) || null;
         } catch (error) {
-            logger.error('Error fetching member for ChannelUnlinkFluxerCommandHandler:', error);
+            logger.error(
+                'Failed fetching member for Fluxer permission check',
+                {
+                    fluxerGuildId: message.guildId,
+                    fluxerChannelId: message.channelId,
+                    authorId: message.author.id,
+                },
+                error
+            );
             await message.reply('Could not fetch your member information.');
             return false;
         }

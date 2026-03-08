@@ -107,7 +107,7 @@ const startFluxerClient = async ({
     });
 
     client.on(Events.Error, (error) => {
-        logger.error('Fluxer client error:', error);
+        logger.error('Fluxer client error', { client: 'fluxer' }, error);
     });
 
     client.on(Events.MessageDelete, async (message: PartialMessage) => {
@@ -117,7 +117,17 @@ const startFluxerClient = async ({
         try {
             linkService.deleteMessageLink(messageLink.id);
         } catch (error) {
-            logger.error('Error deleting message link from database:', error);
+            logger.error(
+                'Failed to delete message link from database',
+                {
+                    source: 'fluxer.messageDelete',
+                    fluxerMessageId: message.id,
+                    messageLinkId: messageLink.id,
+                    channelLinkId: messageLink.channelLinkId,
+                    guildLinkId: messageLink.guildLinkId,
+                },
+                error
+            );
         }
 
         const channelLink = await linkService.getChannelLinkById(messageLink.channelLinkId);
@@ -133,17 +143,30 @@ const startFluxerClient = async ({
             messageLink.discordMessageId
         );
         if (!msg) {
-            logger.error(
-                'Could not find linked Discord message to delete for Fluxer message ID:',
-                message.id
-            );
+            logger.error('Could not find linked Discord message for delete propagation', {
+                source: 'fluxer.messageDelete',
+                fluxerMessageId: message.id,
+                channelLinkId: channelLink.id,
+                guildLinkId: guildLink.id,
+                discordMessageId: messageLink.discordMessageId,
+            });
             return;
         }
 
         try {
             await msg.delete();
         } catch (error) {
-            logger.error('Error deleting message from Discord:', error);
+            logger.error(
+                'Failed to delete linked Discord message',
+                {
+                    source: 'fluxer.messageDelete',
+                    fluxerMessageId: message.id,
+                    discordMessageId: messageLink.discordMessageId,
+                    discordGuildId: guildLink.discordGuildId,
+                    discordChannelId: channelLink.discordChannelId,
+                },
+                error
+            );
         }
     });
 
@@ -173,7 +196,17 @@ const startFluxerClient = async ({
                 newMsg
             );
         } catch (error) {
-            logger.error('Error relaying message update to Discord:', error);
+            logger.error(
+                'Failed relaying Fluxer message update to Discord',
+                {
+                    source: 'fluxer.messageUpdate',
+                    fluxerMessageId: newMessage.id,
+                    discordMessageId: linkedMessage.discordMessageId,
+                    channelLinkId: linkedChannel.id,
+                    guildLinkId: linkedChannel.guildLinkId,
+                },
+                error
+            );
         }
     });
 
@@ -203,7 +236,18 @@ const startFluxerClient = async ({
             try {
                 await handler.handleCommand(message, command, ...args);
             } catch (error) {
-                logger.error(`Error executing fluxer command "${command}":`, error);
+                logger.error(
+                    'Fluxer command execution failed',
+                    {
+                        source: 'fluxer.messageCreate.command',
+                        command,
+                        args,
+                        guildId: message.guildId,
+                        channelId: message.channelId,
+                        authorId: message.author.id,
+                    },
+                    error
+                );
             }
         }
 

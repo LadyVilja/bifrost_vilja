@@ -61,7 +61,15 @@ export default class GuildLinkDiscordCommandHandler extends DiscordCommandHandle
                     'Error Verifying Fluxer Guild'
                 )
             );
-            logger.error('Error fetching Fluxer guild:', error);
+            logger.error(
+                'Failed verifying Fluxer guild for Discord guild link command',
+                {
+                    command,
+                    discordGuildId,
+                    fluxerGuildId,
+                },
+                error
+            );
             return;
         }
 
@@ -80,7 +88,15 @@ export default class GuildLinkDiscordCommandHandler extends DiscordCommandHandle
                     'Error Creating Guild Link'
                 )
             );
-            logger.error('Error creating guild link:', error);
+            logger.error(
+                'Failed creating guild link from Discord command',
+                {
+                    command,
+                    discordGuildId,
+                    fluxerGuildId,
+                },
+                error
+            );
         }
     }
 }

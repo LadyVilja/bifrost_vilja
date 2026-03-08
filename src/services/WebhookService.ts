@@ -55,7 +55,11 @@ export class WebhookService {
             const webhook = await channel.createWebhook({ name });
             return { id: webhook.id, token: webhook.token! };
         } catch (error: any) {
-            logger.error('Error creating Discord webhook:', error);
+            logger.error(
+                'Failed creating Discord webhook',
+                { operation: 'createDiscordWebhook', channelId, name },
+                error
+            );
             throw error;
         }
     }
@@ -74,7 +78,11 @@ export class WebhookService {
             const webhookClient = new WebhookClient({ id: webhookId, token: webhookToken });
             return webhookClient;
         } catch (error: any) {
-            logger.error('Error getting or creating Discord webhook:', error);
+            logger.error(
+                'Failed fetching Discord webhook',
+                { operation: 'getDiscordWebhook', webhookId },
+                error
+            );
             throw error;
         }
     }
@@ -100,7 +108,16 @@ export class WebhookService {
 
             return { messageId: id };
         } catch (error: any) {
-            logger.error('Error sending message via Discord webhook:', error);
+            logger.error(
+                'Failed sending message via Discord webhook',
+                {
+                    operation: 'sendMessageViaDiscordWebhook',
+                    hasContent: Boolean(data.content),
+                    attachmentCount: data.attachments?.length || 0,
+                    embedCount: data.embeds?.length || 0,
+                },
+                error
+            );
             throw error;
         }
     }
@@ -123,7 +140,17 @@ export class WebhookService {
                 embeds: data.embeds?.map((embed) => embed.toDiscordEmbed()) || [],
             });
         } catch (error: any) {
-            logger.error('Error editing message via Discord webhook:', error);
+            logger.error(
+                'Failed editing message via Discord webhook',
+                {
+                    operation: 'editMessageViaDiscordWebhook',
+                    messageId,
+                    hasContent: Boolean(data.content),
+                    attachmentCount: data.attachments?.length || 0,
+                    embedCount: data.embeds?.length || 0,
+                },
+                error
+            );
             throw error;
         }
     }
@@ -143,7 +170,11 @@ export class WebhookService {
             const webhook = await channel.createWebhook({ name });
             return { id: webhook.id, token: webhook.token! };
         } catch (error: any) {
-            logger.error('Error creating Fluxer webhook:', error);
+            logger.error(
+                'Failed creating Fluxer webhook',
+                { operation: 'createFluxerWebhook', channelId, name },
+                error
+            );
             throw error;
         }
     }
@@ -157,7 +188,11 @@ export class WebhookService {
             const webhook = FluxerWebhook.fromToken(this.fluxerClient, webhookId, webhookToken);
             return webhook;
         } catch (error: any) {
-            logger.error('Error getting or creating Fluxer webhook:', error);
+            logger.error(
+                'Failed creating Fluxer webhook instance from token',
+                { operation: 'getFluxerWebhook', webhookId },
+                error
+            );
             throw error;
         }
     }
@@ -198,7 +233,16 @@ export class WebhookService {
 
             return { messageId: msg.id };
         } catch (error: any) {
-            logger.error('Error sending message via Fluxer webhook:', error);
+            logger.error(
+                'Failed sending message via Fluxer webhook',
+                {
+                    operation: 'sendMessageViaFluxerWebhook',
+                    hasContent: Boolean(data.content),
+                    attachmentCount: data.attachments?.length || 0,
+                    embedCount: data.embeds?.length || 0,
+                },
+                error
+            );
             throw error;
         }
     }

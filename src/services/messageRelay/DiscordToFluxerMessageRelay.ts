@@ -46,7 +46,19 @@ export default class DiscordToFluxerMessageRelay extends MessageRelay<
                 channelLinkId: linkedChannel.id,
             });
         } catch (error) {
-            logger.error('Error relaying message to Fluxer:', error);
+            logger.error(
+                'Failed relaying Discord message to Fluxer',
+                {
+                    source: 'DiscordToFluxerMessageRelay',
+                    discordMessageId: message.id,
+                    discordGuildId: message.guildId,
+                    discordChannelId: message.channelId,
+                    linkId: linkedChannel.linkId,
+                    channelLinkId: linkedChannel.id,
+                    guildLinkId: linkedChannel.guildLinkId,
+                },
+                error
+            );
         }
     }
 }

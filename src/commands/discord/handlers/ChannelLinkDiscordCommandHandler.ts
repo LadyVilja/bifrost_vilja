@@ -58,7 +58,16 @@ export default class ChannelLinkDiscordCommandHandler extends DiscordCommandHand
                     'Error Fetching Guild Link'
                 )
             );
-            logger.error('Error fetching guild link:', error);
+            logger.error(
+                'Failed fetching guild link for Discord channel link command',
+                {
+                    command,
+                    discordGuildId: message.guildId,
+                    discordChannelId: message.channelId,
+                    fluxerChannelId,
+                },
+                error
+            );
             return;
         }
 
@@ -75,7 +84,17 @@ export default class ChannelLinkDiscordCommandHandler extends DiscordCommandHand
                     'Channel Not Found'
                 )
             );
-            logger.error('Error fetching Fluxer channel:', error);
+            logger.error(
+                'Failed fetching Fluxer channel for Discord channel link command',
+                {
+                    command,
+                    discordGuildId: message.guildId,
+                    discordChannelId: message.channelId,
+                    fluxerGuildId: guildLink.fluxerGuildId,
+                    fluxerChannelId,
+                },
+                error
+            );
             return;
         }
 
@@ -92,7 +111,16 @@ export default class ChannelLinkDiscordCommandHandler extends DiscordCommandHand
                     'Error Creating Discord Webhook'
                 )
             );
-            logger.error('Error creating Discord webhook:', error);
+            logger.error(
+                'Failed creating Discord webhook for channel link',
+                {
+                    command,
+                    discordGuildId: message.guildId,
+                    discordChannelId: message.channelId,
+                    fluxerChannelId,
+                },
+                error
+            );
             return;
         }
 
@@ -109,7 +137,16 @@ export default class ChannelLinkDiscordCommandHandler extends DiscordCommandHand
                     'Error Creating Fluxer Webhook'
                 )
             );
-            logger.error('Error creating Fluxer webhook:', error);
+            logger.error(
+                'Failed creating Fluxer webhook for channel link',
+                {
+                    command,
+                    discordGuildId: message.guildId,
+                    discordChannelId: message.channelId,
+                    fluxerChannelId,
+                },
+                error
+            );
             return;
         }
 
@@ -136,7 +173,16 @@ export default class ChannelLinkDiscordCommandHandler extends DiscordCommandHand
                     'Error Creating Channel Link'
                 )
             );
-            logger.error('Error creating channel link:', error);
+            logger.error(
+                'Failed creating channel link from Discord command',
+                {
+                    command,
+                    discordGuildId: message.guildId,
+                    discordChannelId: message.channelId,
+                    fluxerChannelId,
+                },
+                error
+            );
         }
     }
 }

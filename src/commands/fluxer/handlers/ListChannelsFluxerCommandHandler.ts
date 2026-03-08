@@ -58,7 +58,15 @@ export default class ListChannelsFluxerCommandHandler extends FluxerCommandHandl
             });
         } catch (error: any) {
             await message.reply(`Failed to list channel links: ${error.message}`);
-            logger.error('Error listing channel links:', error);
+            logger.error(
+                'Failed listing channel links for Fluxer guild',
+                {
+                    command,
+                    fluxerGuildId: message.guildId,
+                    fluxerChannelId: message.channelId,
+                },
+                error
+            );
         }
     }
 }

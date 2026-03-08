@@ -48,7 +48,14 @@ export default class GuildUnlinkFluxerCommandHandler extends FluxerCommandHandle
                     'Error Unlinking Guild'
                 )
             );
-            logger.error('Error unlinking guild:', error);
+            logger.error(
+                'Failed unlinking guild from Fluxer command',
+                {
+                    command,
+                    fluxerGuildId,
+                },
+                error
+            );
         }
     }
 }

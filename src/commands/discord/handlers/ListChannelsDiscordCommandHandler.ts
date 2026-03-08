@@ -58,7 +58,15 @@ export default class ListChannelsDiscordCommandHandler extends DiscordCommandHan
             });
         } catch (error: any) {
             await message.reply(`Failed to list channel links: ${error.message}`);
-            logger.error('Error listing channel links: ', error);
+            logger.error(
+                'Failed listing channel links for Discord guild',
+                {
+                    command,
+                    discordGuildId: message.guildId,
+                    discordChannelId: message.channelId,
+                },
+                error
+            );
         }
     }
 }

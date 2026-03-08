@@ -44,7 +44,15 @@ export default class ChannelUnlinkFluxerCommandHandler extends FluxerCommandHand
                     'Failed to Unlink Channel'
                 )
             );
-            logger.error('Error unlinking channel:', error);
+            logger.error(
+                'Failed unlinking channel from Fluxer command',
+                {
+                    command,
+                    fluxerGuildId: message.guildId,
+                    fluxerChannelId: message.channelId,
+                },
+                error
+            );
         }
     }
 }

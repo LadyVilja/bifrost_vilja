@@ -44,7 +44,15 @@ export default class ChannelUnlinkDiscordCommandHandler extends DiscordCommandHa
                     'Failed to Unlink Channel'
                 )
             );
-            logger.error('Error unlinking channel:', error);
+            logger.error(
+                'Failed unlinking channel from Discord command',
+                {
+                    command,
+                    discordGuildId: message.guildId,
+                    discordChannelId: message.channelId,
+                },
+                error
+            );
         }
     }
 }
