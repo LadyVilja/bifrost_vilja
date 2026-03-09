@@ -1,5 +1,7 @@
 import { LinkService } from '../../../services/LinkService';
-import DiscordCommandHandler, { DiscordCommandHandlerMessage } from '../DiscordCommandHandler';
+import DiscordCommandHandler, {
+    DiscordCommandHandlerMessage,
+} from '../DiscordCommandHandler';
 import { Client, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import logger from '../../../utils/logging/logger';
 import { getDiscordCommandUsage } from '../../../commands/commandList';
@@ -53,7 +55,9 @@ export default class GuildUnlinkDiscordCommandHandler extends DiscordCommandHand
                 embeds: [
                     new EmbedBuilder()
                         .setTitle('Error Unlinking Guild')
-                        .setDescription(`Failed to unlink guild: ${error.message}`)
+                        .setDescription(
+                            `Failed to unlink guild: ${error.message}`
+                        )
                         .setColor(EmbedColors.Error)
                         .setFooter(footer)
                         .setTimestamp(),

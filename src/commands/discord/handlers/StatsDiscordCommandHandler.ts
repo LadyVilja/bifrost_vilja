@@ -1,11 +1,21 @@
 import { Client, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
-import DiscordCommandHandler, { DiscordCommandHandlerMessage } from '../DiscordCommandHandler';
+import DiscordCommandHandler, {
+    DiscordCommandHandlerMessage,
+} from '../DiscordCommandHandler';
 import { formatDuration } from '../../../utils/duration';
 import { getHeapUsageMB } from '../../../utils/memory';
 import StatsService from '../../../services/statsService/StatsService';
 import { EmbedColors } from '../../../utils/embeds';
-import { DISCORD_APP_ID, FLUXER_APP_ID, GIT_COMMIT, REPO_URL } from '../../../utils/env';
-import { generateDiscordBotInviteLink, generateFluxerBotInviteLink } from '../../../utils/generateBotInvite';
+import {
+    DISCORD_APP_ID,
+    FLUXER_APP_ID,
+    GIT_COMMIT,
+    REPO_URL,
+} from '../../../utils/env';
+import {
+    generateDiscordBotInviteLink,
+    generateFluxerBotInviteLink,
+} from '../../../utils/generateBotInvite';
 
 export default class StatsDiscordCommandHandler extends DiscordCommandHandler {
     constructor(
@@ -21,7 +31,11 @@ export default class StatsDiscordCommandHandler extends DiscordCommandHandler {
         _command: string,
         ..._args: string[]
     ): Promise<void> {
-        const hasPerms = await this.requirePermission(message, PermissionFlagsBits.ManageWebhooks, 'Manage Webhooks');
+        const hasPerms = await this.requirePermission(
+            message,
+            PermissionFlagsBits.ManageWebhooks,
+            'Manage Webhooks'
+        );
         if (!hasPerms) return;
         const fluxerGuildCount = this.fluxerStatsService.getGuildCount();
         const discordGuildCount = this.discordStatsService.getGuildCount();
@@ -72,12 +86,17 @@ export default class StatsDiscordCommandHandler extends DiscordCommandHandler {
                             inline: false,
                         },
                         { name: 'Uptime', value: readableUptime, inline: true },
-                        { name: 'Memory Usage', value: `${usedHeap} MB`, inline: true },
+                        {
+                            name: 'Memory Usage',
+                            value: `${usedHeap} MB`,
+                            inline: true,
+                        },
                         { name: 'Build', value: buildValue, inline: true },
                         { name: 'Invite', value: inviteValue, inline: false }
                     )
                     .setColor(EmbedColors.Info)
-                    .setFooter(this.footer(message)).setTimestamp(),
+                    .setFooter(this.footer(message))
+                    .setTimestamp(),
             ],
         });
     }

@@ -29,12 +29,17 @@ export default class DiscordEntityResolver implements EntityResolver<
         }
     }
 
-    async fetchChannel(guildOrId: string | Guild, channelId: string): Promise<Channel | null> {
+    async fetchChannel(
+        guildOrId: string | Guild,
+        channelId: string
+    ): Promise<Channel | null> {
         const client = this.ensureClient();
 
         try {
             const guild =
-                typeof guildOrId === 'string' ? await this.fetchGuild(guildOrId) : guildOrId;
+                typeof guildOrId === 'string'
+                    ? await this.fetchGuild(guildOrId)
+                    : guildOrId;
 
             if (!guild) return null;
 

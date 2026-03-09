@@ -1,6 +1,14 @@
 import { Sequelize } from 'sequelize';
 import path from 'path';
-import { CONFIG_PATH, DB_DIALECT, DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER } from '../utils/env';
+import {
+    CONFIG_PATH,
+    DB_DIALECT,
+    DB_HOST,
+    DB_NAME,
+    DB_PASS,
+    DB_PORT,
+    DB_USER,
+} from '../utils/env';
 import logger from '../utils/logging/logger';
 
 let sequelize: Sequelize;

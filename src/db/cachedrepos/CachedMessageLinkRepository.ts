@@ -39,7 +39,10 @@ export class CachedMessageLinkRepository implements MessageLinkRepository {
             fluxerMessageId
         );
 
-        const created = await this.repository.getMessageLinkByDiscordMessageId(discordMessageId);
+        const created =
+            await this.repository.getMessageLinkByDiscordMessageId(
+                discordMessageId
+            );
 
         if (created) {
             this.primeCache(created);
@@ -96,12 +99,17 @@ export class CachedMessageLinkRepository implements MessageLinkRepository {
         return result;
     }
 
-    async getMessageLinkByDiscordMessageId(discordMessageId: string): Promise<MessageLink | null> {
+    async getMessageLinkByDiscordMessageId(
+        discordMessageId: string
+    ): Promise<MessageLink | null> {
         const key = this.discordKey(discordMessageId);
         const cached = this.cache.get(key);
         if (cached) return cached;
 
-        const result = await this.repository.getMessageLinkByDiscordMessageId(discordMessageId);
+        const result =
+            await this.repository.getMessageLinkByDiscordMessageId(
+                discordMessageId
+            );
 
         if (!result) return null;
 
@@ -109,12 +117,17 @@ export class CachedMessageLinkRepository implements MessageLinkRepository {
         return result;
     }
 
-    async getMessageLinkByFluxerMessageId(fluxerMessageId: string): Promise<MessageLink | null> {
+    async getMessageLinkByFluxerMessageId(
+        fluxerMessageId: string
+    ): Promise<MessageLink | null> {
         const key = this.fluxerKey(fluxerMessageId);
         const cached = this.cache.get(key);
         if (cached) return cached;
 
-        const result = await this.repository.getMessageLinkByFluxerMessageId(fluxerMessageId);
+        const result =
+            await this.repository.getMessageLinkByFluxerMessageId(
+                fluxerMessageId
+            );
 
         if (!result) return null;
 

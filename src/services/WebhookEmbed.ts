@@ -1,5 +1,8 @@
 import { EmbedBuilder as FluxerEmbedBuilder } from '@fluxerjs/core';
-import { Embed as DiscordEmbed, EmbedBuilder as DiscordEmbedBuilder } from 'discord.js';
+import {
+    Embed as DiscordEmbed,
+    EmbedBuilder as DiscordEmbedBuilder,
+} from 'discord.js';
 
 export interface WebhookEmbedField {
     name: string;

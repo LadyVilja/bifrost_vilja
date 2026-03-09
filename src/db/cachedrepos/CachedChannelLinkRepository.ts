@@ -39,7 +39,10 @@ export class CachedChannelLinkRepository implements ChannelLinkRepository {
     }): Promise<ChannelLink> {
         const created = await this.repository.create(data);
 
-        this.cache.set(this.guildKey(created.guildLinkId, created.linkId), created);
+        this.cache.set(
+            this.guildKey(created.guildLinkId, created.linkId),
+            created
+        );
         this.cache.set(this.discordKey(created.discordChannelId), created);
         this.cache.set(this.fluxerKey(created.fluxerChannelId), created);
 
@@ -48,13 +51,19 @@ export class CachedChannelLinkRepository implements ChannelLinkRepository {
         return created;
     }
 
-    async findByGuildAndLinkId(guildLinkId: string, linkId: string): Promise<ChannelLink | null> {
+    async findByGuildAndLinkId(
+        guildLinkId: string,
+        linkId: string
+    ): Promise<ChannelLink | null> {
         const key = this.guildKey(guildLinkId, linkId);
 
         const cached = this.cache.get<ChannelLink>(key);
         if (cached) return cached;
 
-        const result = await this.repository.findByGuildAndLinkId(guildLinkId, linkId);
+        const result = await this.repository.findByGuildAndLinkId(
+            guildLinkId,
+            linkId
+        );
 
         if (result) {
             this.cache.set(key, result);
@@ -87,13 +96,16 @@ export class CachedChannelLinkRepository implements ChannelLinkRepository {
         return result;
     }
 
-    async findByDiscordChannelId(discordChannelId: string): Promise<ChannelLink | null> {
+    async findByDiscordChannelId(
+        discordChannelId: string
+    ): Promise<ChannelLink | null> {
         const key = this.discordKey(discordChannelId);
 
         const cached = this.cache.get<ChannelLink>(key);
         if (cached) return cached;
 
-        const result = await this.repository.findByDiscordChannelId(discordChannelId);
+        const result =
+            await this.repository.findByDiscordChannelId(discordChannelId);
 
         if (result) {
             this.cache.set(key, result);
@@ -102,13 +114,16 @@ export class CachedChannelLinkRepository implements ChannelLinkRepository {
         return result;
     }
 
-    async findByFluxerChannelId(fluxerChannelId: string): Promise<ChannelLink | null> {
+    async findByFluxerChannelId(
+        fluxerChannelId: string
+    ): Promise<ChannelLink | null> {
         const key = this.fluxerKey(fluxerChannelId);
 
         const cached = this.cache.get<ChannelLink>(key);
         if (cached) return cached;
 
-        const result = await this.repository.findByFluxerChannelId(fluxerChannelId);
+        const result =
+            await this.repository.findByFluxerChannelId(fluxerChannelId);
 
         if (result) {
             this.cache.set(key, result);

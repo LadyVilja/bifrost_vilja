@@ -1,6 +1,8 @@
 import { Client, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import { LinkService } from '../../../services/LinkService';
-import DiscordCommandHandler, { DiscordCommandHandlerMessage } from '../DiscordCommandHandler';
+import DiscordCommandHandler, {
+    DiscordCommandHandlerMessage,
+} from '../DiscordCommandHandler';
 import logger from '../../../utils/logging/logger';
 import { getDiscordCommandUsage } from '../../../commands/commandList';
 import { EmbedColors } from '../../../utils/embeds';
@@ -34,17 +36,21 @@ export default class ListChannelsDiscordCommandHandler extends DiscordCommandHan
                 return;
             }
 
-            const channelLinks = await this.linkService.getChannelLinksForDiscordGuild(
-                message.guildId!
-            );
+            const channelLinks =
+                await this.linkService.getChannelLinksForDiscordGuild(
+                    message.guildId!
+                );
 
             if (channelLinks.length === 0) {
                 await message.reply({
                     embeds: [
                         new EmbedBuilder()
-                            .setDescription('No channel links found for this guild.')
+                            .setDescription(
+                                'No channel links found for this guild.'
+                            )
                             .setColor(EmbedColors.Warning)
-                            .setFooter(footer).setTimestamp(),
+                            .setFooter(footer)
+                            .setTimestamp(),
                     ],
                 });
                 return;
@@ -63,16 +69,20 @@ export default class ListChannelsDiscordCommandHandler extends DiscordCommandHan
                         .setTitle('Linked Channels')
                         .setDescription(linksList)
                         .setColor(EmbedColors.Info)
-                        .setFooter(footer).setTimestamp(),
+                        .setFooter(footer)
+                        .setTimestamp(),
                 ],
             });
         } catch (error: any) {
             await message.reply({
                 embeds: [
                     new EmbedBuilder()
-                        .setDescription(`Failed to list channel links: ${error.message}`)
+                        .setDescription(
+                            `Failed to list channel links: ${error.message}`
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(footer).setTimestamp(),
+                        .setFooter(footer)
+                        .setTimestamp(),
                 ],
             });
             logger.error(

@@ -3,7 +3,10 @@ import { COMMAND_PREFIX, DISCORD_TOKEN } from './utils/env';
 import logger from './utils/logging/logger';
 import CommandRegistry from './commands/CommandRegistry';
 import DiscordCommandHandler from './commands/discord/DiscordCommandHandler';
-import { isCommandString, parseCommandString } from './commands/parseCommandString';
+import {
+    isCommandString,
+    parseCommandString,
+} from './commands/parseCommandString';
 import PingDiscordCommandHandler from './commands/discord/handlers/PingDiscordCommandHandler';
 import { LinkService } from './services/LinkService';
 import GuildLinkDiscordCommandHandler from './commands/discord/handlers/GuildLinkDiscordCommandHandler';
@@ -71,15 +74,29 @@ const startDiscordClient = async ({
     });
 
     const commandRegistry = new CommandRegistry<DiscordCommandHandler>();
-    commandRegistry.registerCommand('ping', new PingDiscordCommandHandler(client));
-    commandRegistry.registerCommand('help', new HelpDiscordCommandHandler(client));
+    commandRegistry.registerCommand(
+        'ping',
+        new PingDiscordCommandHandler(client)
+    );
+    commandRegistry.registerCommand(
+        'help',
+        new HelpDiscordCommandHandler(client)
+    );
     commandRegistry.registerCommand(
         'stats',
-        new StatsDiscordCommandHandler(client, discordStatsService, fluxerStatsService)
+        new StatsDiscordCommandHandler(
+            client,
+            discordStatsService,
+            fluxerStatsService
+        )
     );
     commandRegistry.registerCommand(
         'linkguild',
-        new GuildLinkDiscordCommandHandler(client, linkService, fluxerEntityResolver)
+        new GuildLinkDiscordCommandHandler(
+            client,
+            linkService,
+            fluxerEntityResolver
+        )
     );
     commandRegistry.registerCommand(
         'unlinkguild',
@@ -118,7 +135,9 @@ const startDiscordClient = async ({
     client.on('messageDelete', async (message) => {
         if (!message.inGuild()) return;
 
-        const messageLink = await linkService.getMessageLinkByDiscordMessageId(message.id);
+        const messageLink = await linkService.getMessageLinkByDiscordMessageId(
+            message.id
+        );
         if (!messageLink) return;
 
         try {
@@ -137,10 +156,14 @@ const startDiscordClient = async ({
             );
         }
 
-        const channelLink = await linkService.getChannelLinkById(messageLink.channelLinkId);
+        const channelLink = await linkService.getChannelLinkById(
+            messageLink.channelLinkId
+        );
         if (!channelLink) return;
 
-        const guildLink = await linkService.getGuildLinkById(channelLink.guildLinkId);
+        const guildLink = await linkService.getGuildLinkById(
+            channelLink.guildLinkId
+        );
         if (!guildLink) return;
 
         //console.log('Deleting Fluxer message with ID:', messageLink.fluxerMessageId);
@@ -150,13 +173,16 @@ const startDiscordClient = async ({
             messageLink.fluxerMessageId
         );
         if (!msg) {
-            logger.error('Could not find linked Fluxer message for delete propagation', {
-                source: 'discord.messageDelete',
-                discordMessageId: message.id,
-                channelLinkId: channelLink.id,
-                guildLinkId: guildLink.id,
-                fluxerMessageId: messageLink.fluxerMessageId,
-            });
+            logger.error(
+                'Could not find linked Fluxer message for delete propagation',
+                {
+                    source: 'discord.messageDelete',
+                    discordMessageId: message.id,
+                    channelLinkId: channelLink.id,
+                    guildLinkId: guildLink.id,
+                    fluxerMessageId: messageLink.fluxerMessageId,
+                }
+            );
             return;
         }
 
@@ -217,21 +243,34 @@ const startDiscordClient = async ({
         if (!message.inGuild()) return;
 
         if (message.webhookId) {
-            const webhookLink = await linkService.getChannelLinkByDiscordChannelId(
-                message.channelId
-            );
-            if (webhookLink && webhookLink.discordWebhookId === message.webhookId) return;
+            const webhookLink =
+                await linkService.getChannelLinkByDiscordChannelId(
+                    message.channelId
+                );
+            if (
+                webhookLink &&
+                webhookLink.discordWebhookId === message.webhookId
+            )
+                return;
         }
 
-        if (isCommandString(message.content, COMMAND_PREFIX) && !message.author.bot) {
-            const { command, args } = parseCommandString(message.content, COMMAND_PREFIX);
+        if (
+            isCommandString(message.content, COMMAND_PREFIX) &&
+            !message.author.bot
+        ) {
+            const { command, args } = parseCommandString(
+                message.content,
+                COMMAND_PREFIX
+            );
             const handler = commandRegistry.getCommandHandler(command);
             if (!handler) {
                 await message.reply({
                     embeds: [
                         new EmbedBuilder()
                             .setTitle('Unknown Command')
-                            .setDescription(`Unknown command: \`${command}\`.\nUse \`${COMMAND_PREFIX}help\` to see the list of available commands.`)
+                            .setDescription(
+                                `Unknown command: \`${command}\`.\nUse \`${COMMAND_PREFIX}help\` to see the list of available commands.`
+                            )
                             .setColor(EmbedColors.Error),
                     ],
                 });
@@ -262,7 +301,10 @@ const startDiscordClient = async ({
             !message.channel.isDMBased() &&
             !message.channel.isThread();
 
-        if (isValidWebhookChannel && !isCommandString(message.content, COMMAND_PREFIX)) {
+        if (
+            isValidWebhookChannel &&
+            !isCommandString(message.content, COMMAND_PREFIX)
+        ) {
             await messageRelay.relayMessage(message);
         }
     });

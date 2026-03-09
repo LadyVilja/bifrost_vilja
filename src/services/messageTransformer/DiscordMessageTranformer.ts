@@ -49,7 +49,9 @@ export default class DiscordMessageTransformer implements MessageTransformer<
         });
     }
 
-    public async transformMessage(message: DiscordMessage): Promise<WebhookMessageData> {
+    public async transformMessage(
+        message: DiscordMessage
+    ): Promise<WebhookMessageData> {
         // console.log('Transforming Discord message:', message.toJSON());
 
         const sanitizedContent = this.sanitizeContent(message);
@@ -63,7 +65,10 @@ export default class DiscordMessageTransformer implements MessageTransformer<
         message.stickers.forEach((sticker) => {
             attachments.push({
                 url: buildDiscordStickerUrl(sticker.id, 160),
-                name: sticker.name + '.' + this.stickerFormatToExtension(sticker.format),
+                name:
+                    sticker.name +
+                    '.' +
+                    this.stickerFormatToExtension(sticker.format),
                 spoiler: false,
             });
         });
@@ -77,7 +82,9 @@ export default class DiscordMessageTransformer implements MessageTransformer<
         const messageContent = isPollPresent
             ? getPollMessage(
                   message.poll!.question.text!,
-                  message.poll!.answers.map((a) => a.text).filter((t): t is string => !!t),
+                  message
+                      .poll!.answers.map((a) => a.text)
+                      .filter((t): t is string => !!t),
                   message.poll!.expiresTimestamp!
               )
             : sanitizedContent;

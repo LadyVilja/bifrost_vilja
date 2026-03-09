@@ -44,32 +44,51 @@ export default class HealthCheckService {
 
     private async checkDiscordHealth(): Promise<HealthStatus> {
         if (!this.discordClient)
-            return { healthy: false, message: 'Discord client not initialized' };
+            return {
+                healthy: false,
+                message: 'Discord client not initialized',
+            };
         try {
             if (this.discordClient.ws.status !== 0)
-                return { healthy: false, message: 'Discord client is not connected' };
+                return {
+                    healthy: false,
+                    message: 'Discord client is not connected',
+                };
             await this.discordClient.application?.fetch();
             return { healthy: true };
         } catch (err) {
-            return { healthy: false, message: `Error checking Discord health: ${err}` };
+            return {
+                healthy: false,
+                message: `Error checking Discord health: ${err}`,
+            };
         }
     }
 
     private async checkFluxerHealth(): Promise<HealthStatus> {
-        if (!this.fluxerClient) return { healthy: false, message: 'Fluxer client not initialized' };
+        if (!this.fluxerClient)
+            return { healthy: false, message: 'Fluxer client not initialized' };
         try {
             await this.fluxerClient.rest.get('/gateway/bot');
             const isReady = this.fluxerClient.isReady();
             if (!isReady) {
-                return { healthy: false, message: 'Fluxer client is not ready' };
+                return {
+                    healthy: false,
+                    message: 'Fluxer client is not ready',
+                };
             }
             return { healthy: true };
         } catch (err) {
-            return { healthy: false, message: `Error checking Fluxer health: ${err}` };
+            return {
+                healthy: false,
+                message: `Error checking Fluxer health: ${err}`,
+            };
         }
     }
 
-    private async pushHealthStatus(pushUrl: string, status: HealthStatus): Promise<void> {
+    private async pushHealthStatus(
+        pushUrl: string,
+        status: HealthStatus
+    ): Promise<void> {
         const url = new URL(pushUrl);
         url.searchParams.append('status', status.healthy ? 'up' : 'down');
         if (status.message) url.searchParams.append('msg', status.message);

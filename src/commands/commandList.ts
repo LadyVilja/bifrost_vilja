@@ -1,4 +1,7 @@
-import { EmbedBuilder as DiscordEmbedBuilder, MessageReplyOptions } from 'discord.js';
+import {
+    EmbedBuilder as DiscordEmbedBuilder,
+    MessageReplyOptions,
+} from 'discord.js';
 import { COMMAND_PREFIX } from '../utils/env';
 import {
     MessageSendOptions,
@@ -23,66 +26,78 @@ const commandList: Command[] = [
     {
         name: 'help',
         discord: {
-            description: 'Displays a list of available commands and their descriptions.',
+            description:
+                'Displays a list of available commands and their descriptions.',
             usageArgs: [],
         },
         fluxer: {
-            description: 'Displays a list of available commands and their descriptions.',
+            description:
+                'Displays a list of available commands and their descriptions.',
             usageArgs: [],
         },
     },
     {
         name: 'linkguild',
         discord: {
-            description: 'Creates a link between this Discord guild and a Fluxer guild.',
+            description:
+                'Creates a link between this Discord guild and a Fluxer guild.',
             usageArgs: ['<fluxerGuildId>'],
         },
         fluxer: {
-            description: 'Creates a link between this Fluxer guild and a Discord guild.',
+            description:
+                'Creates a link between this Fluxer guild and a Discord guild.',
             usageArgs: ['<discordGuildId>'],
         },
     },
     {
         name: 'unlinkguild',
         discord: {
-            description: 'Unlinks this Discord guild from its linked Fluxer guild.',
+            description:
+                'Unlinks this Discord guild from its linked Fluxer guild.',
             usageArgs: [],
         },
         fluxer: {
-            description: 'Unlinks this Fluxer guild from its linked Discord guild.',
+            description:
+                'Unlinks this Fluxer guild from its linked Discord guild.',
             usageArgs: [],
         },
     },
     {
         name: 'linkchannel',
         discord: {
-            description: 'Links the current Discord channel to a Fluxer channel.',
+            description:
+                'Links the current Discord channel to a Fluxer channel.',
             usageArgs: ['<fluxerChannelId>'],
         },
         fluxer: {
-            description: 'Links the current Fluxer channel to a Discord channel.',
+            description:
+                'Links the current Fluxer channel to a Discord channel.',
             usageArgs: ['<discordChannelId>'],
         },
     },
     {
         name: 'listchannels',
         discord: {
-            description: 'Lists all channels linked in the current Discord guild.',
+            description:
+                'Lists all channels linked in the current Discord guild.',
             usageArgs: [],
         },
         fluxer: {
-            description: 'Lists all channels linked in the current Fluxer guild.',
+            description:
+                'Lists all channels linked in the current Fluxer guild.',
             usageArgs: [],
         },
     },
     {
         name: 'unlinkchannel',
         discord: {
-            description: 'Unlinks the current Discord channel from its linked Fluxer channel.',
+            description:
+                'Unlinks the current Discord channel from its linked Fluxer channel.',
             usageArgs: [],
         },
         fluxer: {
-            description: 'Unlinks the current Fluxer channel from its linked Discord channel.',
+            description:
+                'Unlinks the current Fluxer channel from its linked Discord channel.',
             usageArgs: [],
         },
     },
@@ -101,15 +116,21 @@ const commandList: Command[] = [
     },
 ];
 
-function getStringCommandUsage(commandName: string, platform: CommandPlatform): string {
+function getStringCommandUsage(
+    commandName: string,
+    platform: CommandPlatform
+): string {
     const command = commandList.find((cmd) => cmd.name === commandName);
     if (!command) return `Command \`${commandName}\` not found.`;
-    const commandInfo = platform === 'discord' ? command.discord : command.fluxer;
+    const commandInfo =
+        platform === 'discord' ? command.discord : command.fluxer;
     const baseMessage = `Usage: \`${COMMAND_PREFIX}${commandName} ${commandInfo.usageArgs.join(' ')}\``;
     return `${baseMessage}\n> ${commandInfo.description}`;
 }
 
-export function getDiscordCommandUsage(commandName: string): MessageReplyOptions {
+export function getDiscordCommandUsage(
+    commandName: string
+): MessageReplyOptions {
     const usageMessage = getStringCommandUsage(commandName, 'discord');
     return {
         embeds: [
@@ -134,7 +155,8 @@ export function getFluxerCommandUsage(commandName: string): MessageSendOptions {
 
 export const getHelpMessage = (platform: CommandPlatform): string => {
     function getHelpLine(command: Command): string {
-        const commandInfo = platform === 'discord' ? command.discord : command.fluxer;
+        const commandInfo =
+            platform === 'discord' ? command.discord : command.fluxer;
 
         const usage =
             commandInfo.usageArgs && commandInfo.usageArgs.length > 0

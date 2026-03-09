@@ -13,7 +13,8 @@ export default class PingFluxerCommandHandler extends FluxerCommandHandler {
                 new EmbedBuilder()
                     .setDescription('Pong!')
                     .setColor(EmbedColors.Success)
-                    .setFooter(this.footer(message)).setTimestamp(),
+                    .setFooter(this.footer(message))
+                    .setTimestamp(),
             ],
         });
     }

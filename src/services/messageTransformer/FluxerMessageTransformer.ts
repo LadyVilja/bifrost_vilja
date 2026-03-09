@@ -29,7 +29,9 @@ export default class FluxerMessageTransformer implements MessageTransformer<
         );
     }
 
-    public async transformMessage(message: Message): Promise<WebhookMessageData> {
+    public async transformMessage(
+        message: Message
+    ): Promise<WebhookMessageData> {
         const sanitizedContent = this.sanitizeContent(message);
 
         const attachments = message.attachments
@@ -44,14 +46,19 @@ export default class FluxerMessageTransformer implements MessageTransformer<
                 url: attachment.url!,
                 name: attachment.filename || 'attachment',
                 spoiler:
-                    attachment.flags && attachment.flags & MessageAttachmentFlags.IS_SPOILER
+                    attachment.flags &&
+                    attachment.flags & MessageAttachmentFlags.IS_SPOILER
                         ? true
                         : false,
             }));
 
         message.stickers.forEach((sticker) => {
             attachments.push({
-                url: buildFluxerStickerUrl(sticker.id, sticker.animated || false, 160),
+                url: buildFluxerStickerUrl(
+                    sticker.id,
+                    sticker.animated || false,
+                    160
+                ),
                 name: sticker.name + '.webp',
                 spoiler: false,
             });
@@ -69,7 +76,9 @@ export default class FluxerMessageTransformer implements MessageTransformer<
                     color: 0x252529,
                     author: {
                         name: message.referencedMessage.author.username + ' ↩️',
-                        iconURL: message.referencedMessage.author.avatarURL() || undefined,
+                        iconURL:
+                            message.referencedMessage.author.avatarURL() ||
+                            undefined,
                     },
                     timestamp: null,
                 })

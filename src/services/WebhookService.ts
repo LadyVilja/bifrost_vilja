@@ -4,7 +4,11 @@ import {
     Webhook as FluxerWebhook,
     MessageAttachmentFlags,
 } from '@fluxerjs/core';
-import { AttachmentBuilder, Client as DiscordClient, WebhookClient } from 'discord.js';
+import {
+    AttachmentBuilder,
+    Client as DiscordClient,
+    WebhookClient,
+} from 'discord.js';
 import logger from '../utils/logging/logger';
 import WebhookEmbed from './WebhookEmbed';
 
@@ -47,7 +51,10 @@ export class WebhookService {
         try {
             const channel = await this.discordClient.channels.fetch(channelId);
             const isValidWebhookChannel =
-                channel && channel.isTextBased() && !channel.isDMBased() && !channel.isThread();
+                channel &&
+                channel.isTextBased() &&
+                !channel.isDMBased() &&
+                !channel.isThread();
             if (!isValidWebhookChannel) {
                 throw new Error('Invalid Discord channel');
             }
@@ -73,9 +80,15 @@ export class WebhookService {
         }
 
         try {
-            const webhook = await this.discordClient.fetchWebhook(webhookId, webhookToken);
+            const webhook = await this.discordClient.fetchWebhook(
+                webhookId,
+                webhookToken
+            );
             if (!webhook) return null;
-            const webhookClient = new WebhookClient({ id: webhookId, token: webhookToken });
+            const webhookClient = new WebhookClient({
+                id: webhookId,
+                token: webhookToken,
+            });
             return webhookClient;
         } catch (error: any) {
             logger.error(
@@ -93,7 +106,9 @@ export class WebhookService {
     ): Promise<{ messageId: string }> {
         try {
             const files = data.attachments?.map((att) => {
-                const attBuilder = new AttachmentBuilder(att.url, { name: att.name });
+                const attBuilder = new AttachmentBuilder(att.url, {
+                    name: att.name,
+                });
                 if (att.spoiler) attBuilder.setSpoiler(true);
                 return attBuilder;
             });
@@ -103,7 +118,8 @@ export class WebhookService {
                 username: data.username,
                 avatarURL: data.avatarURL,
                 files,
-                embeds: data.embeds?.map((embed) => embed.toDiscordEmbed()) || [],
+                embeds:
+                    data.embeds?.map((embed) => embed.toDiscordEmbed()) || [],
             });
 
             return { messageId: id };
@@ -129,7 +145,9 @@ export class WebhookService {
     ): Promise<void> {
         try {
             const files = data.attachments?.map((att) => {
-                const attBuilder = new AttachmentBuilder(att.url, { name: att.name });
+                const attBuilder = new AttachmentBuilder(att.url, {
+                    name: att.name,
+                });
                 if (att.spoiler) attBuilder.setSpoiler(true);
                 return attBuilder;
             });
@@ -137,7 +155,8 @@ export class WebhookService {
             await webhook.editMessage(messageId, {
                 content: data.content,
                 files,
-                embeds: data.embeds?.map((embed) => embed.toDiscordEmbed()) || [],
+                embeds:
+                    data.embeds?.map((embed) => embed.toDiscordEmbed()) || [],
             });
         } catch (error: any) {
             logger.error(
@@ -179,13 +198,20 @@ export class WebhookService {
         }
     }
 
-    async getFluxerWebhook(webhookId: string, webhookToken: string): Promise<FluxerWebhook> {
+    async getFluxerWebhook(
+        webhookId: string,
+        webhookToken: string
+    ): Promise<FluxerWebhook> {
         if (!this.fluxerClient) {
             throw new Error('Fluxer client not set in WebhookService');
         }
 
         try {
-            const webhook = FluxerWebhook.fromToken(this.fluxerClient, webhookId, webhookToken);
+            const webhook = FluxerWebhook.fromToken(
+                this.fluxerClient,
+                webhookId,
+                webhookToken
+            );
             return webhook;
         } catch (error: any) {
             logger.error(
@@ -222,13 +248,17 @@ export class WebhookService {
                                 ? MessageAttachmentFlags.IS_SPOILER
                                 : undefined,
                         })) || [],
-                    embeds: data.embeds?.map((embed) => embed.toFluxerEmbed()) || [],
+                    embeds:
+                        data.embeds?.map((embed) => embed.toFluxerEmbed()) ||
+                        [],
                 },
                 true
             );
 
             if (!msg) {
-                throw new Error('Did not receive message object after sending via Fluxer webhook');
+                throw new Error(
+                    'Did not receive message object after sending via Fluxer webhook'
+                );
             }
 
             return { messageId: msg.id };

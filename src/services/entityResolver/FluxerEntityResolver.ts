@@ -1,7 +1,11 @@
 import { Channel, Client, Guild, Message } from '@fluxerjs/core';
 import EntityResolver from '../entityResolver/EntityResolver';
 
-export default class FluxerEntityResolver implements EntityResolver<Guild, Channel, Message> {
+export default class FluxerEntityResolver implements EntityResolver<
+    Guild,
+    Channel,
+    Message
+> {
     private fluxerClient: Client | null = null;
 
     setFluxerClient(client: Client) {
@@ -25,16 +29,25 @@ export default class FluxerEntityResolver implements EntityResolver<Guild, Chann
         }
     }
 
-    async fetchChannel(guildOrId: string | Guild, channelId: string): Promise<Channel | null> {
+    async fetchChannel(
+        guildOrId: string | Guild,
+        channelId: string
+    ): Promise<Channel | null> {
         const client = this.ensureClient();
 
         try {
             const guild =
-                typeof guildOrId === 'string' ? await this.fetchGuild(guildOrId) : guildOrId;
+                typeof guildOrId === 'string'
+                    ? await this.fetchGuild(guildOrId)
+                    : guildOrId;
 
             if (!guild) return null;
 
-            return (await guild.fetchChannels()).find((ch) => ch.id === channelId) || null;
+            return (
+                (await guild.fetchChannels()).find(
+                    (ch) => ch.id === channelId
+                ) || null
+            );
         } catch {
             return null;
         }

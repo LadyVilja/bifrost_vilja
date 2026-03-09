@@ -8,7 +8,9 @@ export default class FluxerToDiscordMessageRelay extends MessageRelay<Message> {
         const linkService = this.getLinkService();
         const webhookService = this.getWebhookService();
 
-        const linkedChannel = await linkService.getChannelLinkByFluxerChannelId(message.channelId);
+        const linkedChannel = await linkService.getChannelLinkByFluxerChannelId(
+            message.channelId
+        );
         if (!linkedChannel) return;
 
         try {
@@ -26,7 +28,9 @@ export default class FluxerToDiscordMessageRelay extends MessageRelay<Message> {
             if (message.type === 7) {
                 await webhookService.sendMessageViaDiscordWebhook(webhook, {
                     content: formatJoinMessage(
-                        message.author.username + '#' + message.author.discriminator,
+                        message.author.username +
+                            '#' +
+                            message.author.discriminator,
                         'fluxer'
                     ),
                     username: message.client.user?.username || 'Bifröst',
@@ -35,7 +39,8 @@ export default class FluxerToDiscordMessageRelay extends MessageRelay<Message> {
                 return;
             }
 
-            const msg = await this.getMessageTransformer().transformMessage(message);
+            const msg =
+                await this.getMessageTransformer().transformMessage(message);
 
             const { messageId: webhookMessageId } =
                 await webhookService.sendMessageViaDiscordWebhook(webhook, msg);

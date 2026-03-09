@@ -1,13 +1,25 @@
-import { Client, EmbedBuilder, GuildMember, Message, PermissionResolvable } from '@fluxerjs/core';
+import {
+    Client,
+    EmbedBuilder,
+    GuildMember,
+    Message,
+    PermissionResolvable,
+} from '@fluxerjs/core';
 import CommandHandler from '../CommandHandler';
 import logger from '../../utils/logging/logger';
 import { EmbedColors } from '../../utils/embeds';
 import { DELETE_INVOCATION } from '../../utils/env';
 
-export default abstract class FluxerCommandHandler extends CommandHandler<Client, Message> {
+export default abstract class FluxerCommandHandler extends CommandHandler<
+    Client,
+    Message
+> {
     protected footer(message: Message) {
         if (!DELETE_INVOCATION) return null;
-        const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        const time = new Date().toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+        });
         return {
             text: `${message.author.username} used ${message.content} • ${time}`,
             iconURL: (message.author as any).avatarURL?.() ?? undefined,
@@ -21,14 +33,18 @@ export default abstract class FluxerCommandHandler extends CommandHandler<Client
     ): Promise<boolean> {
         let authorMember: GuildMember | null = null;
         try {
-            authorMember = (await message.guild?.fetchMember(message.author.id)) || null;
+            authorMember =
+                (await message.guild?.fetchMember(message.author.id)) || null;
         } catch (error) {
             await message.reply({
                 embeds: [
                     new EmbedBuilder()
-                        .setDescription('Could not fetch your member information.')
+                        .setDescription(
+                            'Could not fetch your member information.'
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(this.footer(message)).setTimestamp(),
+                        .setFooter(this.footer(message))
+                        .setTimestamp(),
                 ],
             });
             logger.error(
@@ -46,9 +62,12 @@ export default abstract class FluxerCommandHandler extends CommandHandler<Client
             await message.reply({
                 embeds: [
                     new EmbedBuilder()
-                        .setDescription('Could not fetch your member information.')
+                        .setDescription(
+                            'Could not fetch your member information.'
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(this.footer(message)).setTimestamp(),
+                        .setFooter(this.footer(message))
+                        .setTimestamp(),
                 ],
             });
             return false;
@@ -59,9 +78,12 @@ export default abstract class FluxerCommandHandler extends CommandHandler<Client
             await message.reply({
                 embeds: [
                     new EmbedBuilder()
-                        .setDescription(`You need the \`${displayName}\` permission to use this command.`)
+                        .setDescription(
+                            `You need the \`${displayName}\` permission to use this command.`
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(this.footer(message)).setTimestamp(),
+                        .setFooter(this.footer(message))
+                        .setTimestamp(),
                 ],
             });
             return false;
@@ -74,9 +96,12 @@ export default abstract class FluxerCommandHandler extends CommandHandler<Client
             await message.reply({
                 embeds: [
                     new EmbedBuilder()
-                        .setDescription('Only the server owner can use this command.')
+                        .setDescription(
+                            'Only the server owner can use this command.'
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(this.footer(message)).setTimestamp(),
+                        .setFooter(this.footer(message))
+                        .setTimestamp(),
                 ],
             });
             return false;

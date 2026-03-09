@@ -1,7 +1,16 @@
-import { Client, EmbedBuilder, Events, PartialMessage, TextChannel } from '@fluxerjs/core';
+import {
+    Client,
+    EmbedBuilder,
+    Events,
+    PartialMessage,
+    TextChannel,
+} from '@fluxerjs/core';
 import CommandRegistry from './commands/CommandRegistry';
 import PingFluxerCommandHandler from './commands/fluxer/handlers/PingFluxerCommandHandler';
-import { isCommandString, parseCommandString } from './commands/parseCommandString';
+import {
+    isCommandString,
+    parseCommandString,
+} from './commands/parseCommandString';
 import './utils/env';
 import logger from './utils/logging/logger';
 import FluxerCommandHandler from './commands/fluxer/FluxerCommandHandler';
@@ -65,15 +74,29 @@ const startFluxerClient = async ({
     });
 
     const commandRegistry = new CommandRegistry<FluxerCommandHandler>();
-    commandRegistry.registerCommand('ping', new PingFluxerCommandHandler(client));
-    commandRegistry.registerCommand('help', new HelpFluxerCommandHandler(client));
+    commandRegistry.registerCommand(
+        'ping',
+        new PingFluxerCommandHandler(client)
+    );
+    commandRegistry.registerCommand(
+        'help',
+        new HelpFluxerCommandHandler(client)
+    );
     commandRegistry.registerCommand(
         'stats',
-        new StatsFluxerCommandHandler(client, discordStatsService, fluxerStatsService)
+        new StatsFluxerCommandHandler(
+            client,
+            discordStatsService,
+            fluxerStatsService
+        )
     );
     commandRegistry.registerCommand(
         'linkguild',
-        new GuildLinkFluxerCommandHandler(client, linkService, discordEntityResolver)
+        new GuildLinkFluxerCommandHandler(
+            client,
+            linkService,
+            discordEntityResolver
+        )
     );
     commandRegistry.registerCommand(
         'unlinkguild',
@@ -107,7 +130,9 @@ const startFluxerClient = async ({
     });
 
     client.on(Events.MessageDelete, async (message: PartialMessage) => {
-        const messageLink = await linkService.getMessageLinkByFluxerMessageId(message.id);
+        const messageLink = await linkService.getMessageLinkByFluxerMessageId(
+            message.id
+        );
         if (!messageLink) return;
 
         try {
@@ -126,10 +151,14 @@ const startFluxerClient = async ({
             );
         }
 
-        const channelLink = await linkService.getChannelLinkById(messageLink.channelLinkId);
+        const channelLink = await linkService.getChannelLinkById(
+            messageLink.channelLinkId
+        );
         if (!channelLink) return;
 
-        const guildLink = await linkService.getGuildLinkById(channelLink.guildLinkId);
+        const guildLink = await linkService.getGuildLinkById(
+            channelLink.guildLinkId
+        );
         if (!guildLink) return;
 
         //console.log('Deleting Discord message with ID:', messageLink.discordMessageId);
@@ -139,13 +168,16 @@ const startFluxerClient = async ({
             messageLink.discordMessageId
         );
         if (!msg) {
-            logger.error('Could not find linked Discord message for delete propagation', {
-                source: 'fluxer.messageDelete',
-                fluxerMessageId: message.id,
-                channelLinkId: channelLink.id,
-                guildLinkId: guildLink.id,
-                discordMessageId: messageLink.discordMessageId,
-            });
+            logger.error(
+                'Could not find linked Discord message for delete propagation',
+                {
+                    source: 'fluxer.messageDelete',
+                    fluxerMessageId: message.id,
+                    channelLinkId: channelLink.id,
+                    guildLinkId: guildLink.id,
+                    discordMessageId: messageLink.discordMessageId,
+                }
+            );
             return;
         }
 
@@ -167,10 +199,14 @@ const startFluxerClient = async ({
     });
 
     client.on(Events.MessageUpdate, async (_oldMessage, newMessage) => {
-        const linkedMessage = await linkService.getMessageLinkByFluxerMessageId(newMessage.id);
+        const linkedMessage = await linkService.getMessageLinkByFluxerMessageId(
+            newMessage.id
+        );
         if (!linkedMessage) return;
 
-        const linkedChannel = await linkService.getChannelLinkById(linkedMessage.channelLinkId);
+        const linkedChannel = await linkService.getChannelLinkById(
+            linkedMessage.channelLinkId
+        );
         if (!linkedChannel) return;
 
         const webhook = await webhookService.getDiscordWebhook(
@@ -211,21 +247,31 @@ const startFluxerClient = async ({
         if (!message.guildId) return;
 
         if (message.webhookId) {
-            const webhookLink = await linkService.getChannelLinkByFluxerChannelId(
-                message.channelId
-            );
-            if (webhookLink && webhookLink.fluxerWebhookId === message.webhookId) return;
+            const webhookLink =
+                await linkService.getChannelLinkByFluxerChannelId(
+                    message.channelId
+                );
+            if (
+                webhookLink &&
+                webhookLink.fluxerWebhookId === message.webhookId
+            )
+                return;
         }
 
         if (isCommandString(message.content, COMMAND_PREFIX)) {
-            const { command, args } = parseCommandString(message.content, COMMAND_PREFIX);
+            const { command, args } = parseCommandString(
+                message.content,
+                COMMAND_PREFIX
+            );
             const handler = commandRegistry.getCommandHandler(command);
             if (!handler) {
                 await message.reply({
                     embeds: [
                         new EmbedBuilder()
                             .setTitle('Unknown Command')
-                            .setDescription(`Unknown command: \`${command}\`\nUse \`${COMMAND_PREFIX}help\` to see available commands.`)
+                            .setDescription(
+                                `Unknown command: \`${command}\`\nUse \`${COMMAND_PREFIX}help\` to see available commands.`
+                            )
                             .setColor(EmbedColors.Error),
                     ],
                 });

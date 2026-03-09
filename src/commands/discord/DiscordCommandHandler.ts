@@ -1,9 +1,17 @@
-import { Client, EmbedBuilder, Message, OmitPartialGroupDMChannel, PermissionResolvable } from 'discord.js';
+import {
+    Client,
+    EmbedBuilder,
+    Message,
+    OmitPartialGroupDMChannel,
+    PermissionResolvable,
+} from 'discord.js';
 import CommandHandler from '../CommandHandler';
 import { EmbedColors } from '../../utils/embeds';
 import { DELETE_INVOCATION } from '../../utils/env';
 
-export type DiscordCommandHandlerMessage = OmitPartialGroupDMChannel<Message<boolean>>;
+export type DiscordCommandHandlerMessage = OmitPartialGroupDMChannel<
+    Message<boolean>
+>;
 
 export default abstract class DiscordCommandHandler extends CommandHandler<
     Client,
@@ -32,9 +40,12 @@ export default abstract class DiscordCommandHandler extends CommandHandler<
             await message.reply({
                 embeds: [
                     new EmbedBuilder()
-                        .setDescription('Could not fetch your member information.')
+                        .setDescription(
+                            'Could not fetch your member information.'
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(this.footer(message)).setTimestamp(),
+                        .setFooter(this.footer(message))
+                        .setTimestamp(),
                 ],
             });
             return false;
@@ -45,9 +56,12 @@ export default abstract class DiscordCommandHandler extends CommandHandler<
             await message.reply({
                 embeds: [
                     new EmbedBuilder()
-                        .setDescription(`You need the \`${displayName}\` permission to use this command.`)
+                        .setDescription(
+                            `You need the \`${displayName}\` permission to use this command.`
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(this.footer(message)).setTimestamp(),
+                        .setFooter(this.footer(message))
+                        .setTimestamp(),
                 ],
             });
             return false;
@@ -56,14 +70,19 @@ export default abstract class DiscordCommandHandler extends CommandHandler<
         return true;
     }
 
-    protected async requireOwner(message: DiscordCommandHandlerMessage): Promise<boolean> {
+    protected async requireOwner(
+        message: DiscordCommandHandlerMessage
+    ): Promise<boolean> {
         if (message.guild?.ownerId !== message.author.id) {
             await message.reply({
                 embeds: [
                     new EmbedBuilder()
-                        .setDescription('Only the server owner can use this command.')
+                        .setDescription(
+                            'Only the server owner can use this command.'
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(this.footer(message)).setTimestamp(),
+                        .setFooter(this.footer(message))
+                        .setTimestamp(),
                 ],
             });
             return false;

@@ -4,8 +4,16 @@ import { formatDuration } from '../../../utils/duration';
 import StatsService from '../../../services/statsService/StatsService';
 import { getHeapUsageMB } from '../../../utils/memory';
 import { EmbedColors } from '../../../utils/embeds';
-import { DISCORD_APP_ID, FLUXER_APP_ID, GIT_COMMIT, REPO_URL } from '../../../utils/env';
-import { generateDiscordBotInviteLink, generateFluxerBotInviteLink } from '../../../utils/generateBotInvite';
+import {
+    DISCORD_APP_ID,
+    FLUXER_APP_ID,
+    GIT_COMMIT,
+    REPO_URL,
+} from '../../../utils/env';
+import {
+    generateDiscordBotInviteLink,
+    generateFluxerBotInviteLink,
+} from '../../../utils/generateBotInvite';
 
 export default class StatsFluxerCommandHandler extends FluxerCommandHandler {
     constructor(
@@ -21,7 +29,11 @@ export default class StatsFluxerCommandHandler extends FluxerCommandHandler {
         _command: string,
         ..._args: string[]
     ): Promise<void> {
-        const hasPerms = await this.requirePermission(message, PermissionFlags.ManageWebhooks, 'Manage Webhooks');
+        const hasPerms = await this.requirePermission(
+            message,
+            PermissionFlags.ManageWebhooks,
+            'Manage Webhooks'
+        );
         if (!hasPerms) return;
         const fluxerGuildCount = this.fluxerStatsService.getGuildCount();
         const discordGuildCount = this.discordStatsService.getGuildCount();
@@ -72,12 +84,17 @@ export default class StatsFluxerCommandHandler extends FluxerCommandHandler {
                             inline: false,
                         },
                         { name: 'Uptime', value: readableUptime, inline: true },
-                        { name: 'Memory Usage', value: `${usedHeap} MB`, inline: true },
+                        {
+                            name: 'Memory Usage',
+                            value: `${usedHeap} MB`,
+                            inline: true,
+                        },
                         { name: 'Build', value: buildValue, inline: true },
                         { name: 'Invite', value: inviteValue, inline: false }
                     )
                     .setColor(EmbedColors.Info)
-                    .setFooter(this.footer(message)).setTimestamp(),
+                    .setFooter(this.footer(message))
+                    .setTimestamp(),
             ],
         });
     }

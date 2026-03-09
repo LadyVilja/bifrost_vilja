@@ -37,20 +37,25 @@ export class CachedGuildLinkRepository implements GuildLinkRepository {
         return result;
     }
 
-    async findByDiscordGuildId(discordGuildId: string): Promise<GuildLink | null> {
+    async findByDiscordGuildId(
+        discordGuildId: string
+    ): Promise<GuildLink | null> {
         const key = this.discordKey(discordGuildId);
 
         const cached = this.cache.get<GuildLink>(key);
         if (cached) return cached;
 
-        const result = await this.repository.findByDiscordGuildId(discordGuildId);
+        const result =
+            await this.repository.findByDiscordGuildId(discordGuildId);
         if (!result) return null;
 
         this.primeCache(result);
         return result;
     }
 
-    async findByFluxerGuildId(fluxerGuildId: string): Promise<GuildLink | null> {
+    async findByFluxerGuildId(
+        fluxerGuildId: string
+    ): Promise<GuildLink | null> {
         const key = this.fluxerKey(fluxerGuildId);
 
         const cached = this.cache.get<GuildLink>(key);
@@ -63,8 +68,14 @@ export class CachedGuildLinkRepository implements GuildLinkRepository {
         return result;
     }
 
-    async create(discordGuildId: string, fluxerGuildId: string): Promise<GuildLink> {
-        const created = await this.repository.create(discordGuildId, fluxerGuildId);
+    async create(
+        discordGuildId: string,
+        fluxerGuildId: string
+    ): Promise<GuildLink> {
+        const created = await this.repository.create(
+            discordGuildId,
+            fluxerGuildId
+        );
 
         this.primeCache(created);
 

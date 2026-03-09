@@ -34,17 +34,21 @@ export default class ListChannelsFluxerCommandHandler extends FluxerCommandHandl
                 return;
             }
 
-            const channelLinks = await this.linkService.getChannelLinksForFluxerGuild(
-                message.guildId!
-            );
+            const channelLinks =
+                await this.linkService.getChannelLinksForFluxerGuild(
+                    message.guildId!
+                );
 
             if (channelLinks.length === 0) {
                 await message.reply({
                     embeds: [
                         new EmbedBuilder()
-                            .setDescription('No channel links found for this guild.')
+                            .setDescription(
+                                'No channel links found for this guild.'
+                            )
                             .setColor(EmbedColors.Warning)
-                            .setFooter(footer).setTimestamp(),
+                            .setFooter(footer)
+                            .setTimestamp(),
                     ],
                 });
                 return;
@@ -63,16 +67,20 @@ export default class ListChannelsFluxerCommandHandler extends FluxerCommandHandl
                         .setTitle('Linked Channels')
                         .setDescription(linksList)
                         .setColor(EmbedColors.Info)
-                        .setFooter(footer).setTimestamp(),
+                        .setFooter(footer)
+                        .setTimestamp(),
                 ],
             });
         } catch (error: any) {
             await message.reply({
                 embeds: [
                     new EmbedBuilder()
-                        .setDescription(`Failed to list channel links: ${error.message}`)
+                        .setDescription(
+                            `Failed to list channel links: ${error.message}`
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(footer).setTimestamp(),
+                        .setFooter(footer)
+                        .setTimestamp(),
                 ],
             });
             logger.error(

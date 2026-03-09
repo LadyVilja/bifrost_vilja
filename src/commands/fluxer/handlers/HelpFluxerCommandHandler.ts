@@ -8,8 +8,16 @@ export default class HelpFluxerCommandHandler extends FluxerCommandHandler {
         super(client);
     }
 
-    async handleCommand(message: Message, _command: string, ..._args: string[]): Promise<void> {
-        const hasPerms = await this.requirePermission(message, PermissionFlags.ManageWebhooks, 'Manage Webhooks');
+    async handleCommand(
+        message: Message,
+        _command: string,
+        ..._args: string[]
+    ): Promise<void> {
+        const hasPerms = await this.requirePermission(
+            message,
+            PermissionFlags.ManageWebhooks,
+            'Manage Webhooks'
+        );
         if (!hasPerms) return;
         await message.reply({
             embeds: [
@@ -17,7 +25,8 @@ export default class HelpFluxerCommandHandler extends FluxerCommandHandler {
                     .setTitle('Bifrost Help')
                     .setDescription(getHelpMessage('fluxer'))
                     .setColor(EmbedColors.Info)
-                    .setFooter(this.footer(message)).setTimestamp(),
+                    .setFooter(this.footer(message))
+                    .setTimestamp(),
             ],
         });
     }

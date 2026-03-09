@@ -53,7 +53,9 @@ export default class GuildUnlinkFluxerCommandHandler extends FluxerCommandHandle
                 embeds: [
                     new EmbedBuilder()
                         .setTitle('Error Unlinking Guild')
-                        .setDescription(`Failed to unlink guild: ${error.message}`)
+                        .setDescription(
+                            `Failed to unlink guild: ${error.message}`
+                        )
                         .setColor(EmbedColors.Error)
                         .setFooter(footer)
                         .setTimestamp(),

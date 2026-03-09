@@ -10,9 +10,13 @@ export interface MessageLinkRepository {
 
     getMessageLinkById(id: string): Promise<MessageLink | null>;
 
-    getMessageLinkByDiscordMessageId(discordMessageId: string): Promise<MessageLink | null>;
+    getMessageLinkByDiscordMessageId(
+        discordMessageId: string
+    ): Promise<MessageLink | null>;
 
-    getMessageLinkByFluxerMessageId(fluxerMessageId: string): Promise<MessageLink | null>;
+    getMessageLinkByFluxerMessageId(
+        fluxerMessageId: string
+    ): Promise<MessageLink | null>;
 
     deleteMessageLink(id: string): Promise<void>;
 

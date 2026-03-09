@@ -1,5 +1,7 @@
 import { LinkService } from '../../../services/LinkService';
-import DiscordCommandHandler, { DiscordCommandHandlerMessage } from '../DiscordCommandHandler';
+import DiscordCommandHandler, {
+    DiscordCommandHandlerMessage,
+} from '../DiscordCommandHandler';
 import { Client, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import logger from '../../../utils/logging/logger';
 import { getDiscordCommandUsage } from '../../../commands/commandList';
@@ -45,15 +47,19 @@ export default class GuildLinkDiscordCommandHandler extends DiscordCommandHandle
         const fluxerGuildId = rawGuildId.replace(/^<|>$/g, '');
 
         try {
-            const fluxerGuild = await this.fluxerEntityResolver.fetchGuild(fluxerGuildId);
+            const fluxerGuild =
+                await this.fluxerEntityResolver.fetchGuild(fluxerGuildId);
             if (!fluxerGuild) {
                 await message.reply({
                     embeds: [
                         new EmbedBuilder()
                             .setTitle('Fluxer Guild Not Found')
-                            .setDescription(`Could not find Fluxer guild with ID \`${fluxerGuildId}\`.`)
+                            .setDescription(
+                                `Could not find Fluxer guild with ID \`${fluxerGuildId}\`.`
+                            )
                             .setColor(EmbedColors.Error)
-                            .setFooter(footer).setTimestamp(),
+                            .setFooter(footer)
+                            .setTimestamp(),
                     ],
                 });
                 return;
@@ -63,9 +69,12 @@ export default class GuildLinkDiscordCommandHandler extends DiscordCommandHandle
                 embeds: [
                     new EmbedBuilder()
                         .setTitle('Error Verifying Fluxer Guild')
-                        .setDescription(`Failed to verify Fluxer guild: ${error.message}`)
+                        .setDescription(
+                            `Failed to verify Fluxer guild: ${error.message}`
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(footer).setTimestamp(),
+                        .setFooter(footer)
+                        .setTimestamp(),
                 ],
             });
             logger.error(
@@ -81,14 +90,20 @@ export default class GuildLinkDiscordCommandHandler extends DiscordCommandHandle
         }
 
         try {
-            await this.linkService.createGuildLink(discordGuildId, fluxerGuildId);
+            await this.linkService.createGuildLink(
+                discordGuildId,
+                fluxerGuildId
+            );
             await message.reply({
                 embeds: [
                     new EmbedBuilder()
                         .setTitle('Guild Linked')
-                        .setDescription(`Successfully linked Discord guild \`${discordGuildId}\` with Fluxer guild \`${fluxerGuildId}\`.`)
+                        .setDescription(
+                            `Successfully linked Discord guild \`${discordGuildId}\` with Fluxer guild \`${fluxerGuildId}\`.`
+                        )
                         .setColor(EmbedColors.Success)
-                        .setFooter(footer).setTimestamp(),
+                        .setFooter(footer)
+                        .setTimestamp(),
                 ],
             });
         } catch (error: any) {
@@ -96,9 +111,12 @@ export default class GuildLinkDiscordCommandHandler extends DiscordCommandHandle
                 embeds: [
                     new EmbedBuilder()
                         .setTitle('Error Creating Guild Link')
-                        .setDescription(`Failed to create guild link: ${error.message}`)
+                        .setDescription(
+                            `Failed to create guild link: ${error.message}`
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(footer).setTimestamp(),
+                        .setFooter(footer)
+                        .setTimestamp(),
                 ],
             });
             logger.error('Error creating guild link:', error);

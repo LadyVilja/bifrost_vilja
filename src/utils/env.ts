@@ -66,11 +66,15 @@ export const DB_NAME = process.env.BF_DB_NAME || 'bifrost';
 export const DB_USER = process.env.BF_DB_USER || 'root';
 export const DB_PASS = process.env.BF_DB_PASS || '';
 export const DB_HOST = process.env.BF_DB_HOST || 'localhost';
-export const DB_PORT = process.env.BF_DB_PORT ? Number(process.env.BF_DB_PORT) : 5432;
+export const DB_PORT = process.env.BF_DB_PORT
+    ? Number(process.env.BF_DB_PORT)
+    : 5432;
 
 function tryExec(cmd: string): string | null {
     try {
-        const result = execSync(cmd, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+        const result = execSync(cmd, { stdio: ['ignore', 'pipe', 'ignore'] })
+            .toString()
+            .trim();
         return result || null;
     } catch (err) {
         console.warn(`[env] exec failed: "${cmd}" — ${err}`);
@@ -80,11 +84,14 @@ function tryExec(cmd: string): string | null {
 
 function parseRepoUrl(raw: string): string {
     // Convert SSH git@github.com:owner/repo.git → https://github.com/owner/repo
-    return raw
-        .replace(/^git@([^:]+):/, 'https://$1/')
-        .replace(/\.git$/, '');
+    return raw.replace(/^git@([^:]+):/, 'https://$1/').replace(/\.git$/, '');
 }
 
-export const GIT_COMMIT = process.env.GIT_COMMIT || tryExec('git rev-parse HEAD');
-export const REPO_URL = process.env.REPO_URL
-    || (() => { const r = tryExec('git remote get-url origin'); return r ? parseRepoUrl(r) : null; })();
+export const GIT_COMMIT =
+    process.env.GIT_COMMIT || tryExec('git rev-parse HEAD');
+export const REPO_URL =
+    process.env.REPO_URL ||
+    (() => {
+        const r = tryExec('git remote get-url origin');
+        return r ? parseRepoUrl(r) : null;
+    })();

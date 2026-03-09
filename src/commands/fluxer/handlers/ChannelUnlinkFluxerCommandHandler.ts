@@ -34,14 +34,18 @@ export default class ChannelUnlinkFluxerCommandHandler extends FluxerCommandHand
         }
 
         try {
-            await this.linkService.removeChannelLinkForFluxer(message.guildId!, message.channelId);
+            await this.linkService.removeChannelLinkForFluxer(
+                message.guildId!,
+                message.channelId
+            );
             await message.reply({
                 embeds: [
                     new EmbedBuilder()
                         .setTitle('Channel Unlinked')
                         .setDescription('Successfully unlinked channel link.')
                         .setColor(EmbedColors.Success)
-                        .setFooter(footer).setTimestamp(),
+                        .setFooter(footer)
+                        .setTimestamp(),
                 ],
             });
         } catch (error: any) {
@@ -49,9 +53,13 @@ export default class ChannelUnlinkFluxerCommandHandler extends FluxerCommandHand
                 embeds: [
                     new EmbedBuilder()
                         .setTitle('Failed to Unlink Channel')
-                        .setDescription('An error occurred while unlinking the channel: ' + error.message)
+                        .setDescription(
+                            'An error occurred while unlinking the channel: ' +
+                                error.message
+                        )
                         .setColor(EmbedColors.Error)
-                        .setFooter(footer).setTimestamp(),
+                        .setFooter(footer)
+                        .setTimestamp(),
                 ],
             });
             logger.error(

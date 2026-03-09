@@ -23,9 +23,11 @@ const stringifySafe = (value: unknown): string => {
 };
 
 const serializeLogValue = (value: unknown): string => {
-    if (value instanceof Error) return value.stack || `${value.name}: ${value.message}`;
+    if (value instanceof Error)
+        return value.stack || `${value.name}: ${value.message}`;
     if (typeof value === 'string') return value;
-    if (typeof value === 'object' && value !== null) return stringifySafe(value);
+    if (typeof value === 'object' && value !== null)
+        return stringifySafe(value);
 
     return String(value);
 };

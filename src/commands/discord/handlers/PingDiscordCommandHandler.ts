@@ -1,5 +1,7 @@
 import { EmbedBuilder } from 'discord.js';
-import DiscordCommandHandler, { DiscordCommandHandlerMessage } from '../DiscordCommandHandler';
+import DiscordCommandHandler, {
+    DiscordCommandHandlerMessage,
+} from '../DiscordCommandHandler';
 import { EmbedColors } from '../../../utils/embeds';
 
 export default class PingDiscordCommandHandler extends DiscordCommandHandler {
@@ -13,7 +15,8 @@ export default class PingDiscordCommandHandler extends DiscordCommandHandler {
                 new EmbedBuilder()
                     .setDescription('Pong!')
                     .setColor(EmbedColors.Success)
-                    .setFooter(this.footer(message)).setTimestamp(),
+                    .setFooter(this.footer(message))
+                    .setTimestamp(),
             ],
         });
     }

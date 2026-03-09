@@ -6,11 +6,16 @@ import { formatJoinMessage } from '../../utils/formatJoinMessage';
 export default class DiscordToFluxerMessageRelay extends MessageRelay<
     OmitPartialGroupDMChannel<Message<boolean>>
 > {
-    public async relayMessage(message: OmitPartialGroupDMChannel<Message<boolean>>): Promise<void> {
+    public async relayMessage(
+        message: OmitPartialGroupDMChannel<Message<boolean>>
+    ): Promise<void> {
         const linkService = this.getLinkService();
         const webhookService = this.getWebhookService();
 
-        const linkedChannel = await linkService.getChannelLinkByDiscordChannelId(message.channelId);
+        const linkedChannel =
+            await linkService.getChannelLinkByDiscordChannelId(
+                message.channelId
+            );
         if (!linkedChannel) return;
 
         try {
@@ -27,14 +32,18 @@ export default class DiscordToFluxerMessageRelay extends MessageRelay<
 
             if (message.type === MessageType.UserJoin) {
                 await webhookService.sendMessageViaFluxerWebhook(webhook, {
-                    content: formatJoinMessage(message.author.username, 'discord'),
+                    content: formatJoinMessage(
+                        message.author.username,
+                        'discord'
+                    ),
                     username: message.client.user?.username || 'Bifröst',
                     avatarURL: message.client.user?.avatarURL() || '',
                 });
                 return;
             }
 
-            const msg = await this.getMessageTransformer().transformMessage(message);
+            const msg =
+                await this.getMessageTransformer().transformMessage(message);
 
             const { messageId: webhookMessageId } =
                 await webhookService.sendMessageViaFluxerWebhook(webhook, msg);
