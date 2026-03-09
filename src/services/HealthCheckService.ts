@@ -12,6 +12,10 @@ export default class HealthCheckService {
     private readonly fluxerPushUrl: string | null;
     private discordClient: DiscordClient | null = null;
     private fluxerClient: FluxerClient | null = null;
+    private lastFluxerHealthy: boolean | null = null;
+    private onFluxerRecovered: (() => void) | null = null;
+    private fluxerConsecutiveDowns = 0;
+    private onFluxerDown: ((count: number) => void) | null = null;
 
     constructor(discordPushUrl: string | null, fluxerPushUrl: string | null) {
         this.discordPushUrl = discordPushUrl;
@@ -24,6 +28,18 @@ export default class HealthCheckService {
 
     public setFluxerClient(client: FluxerClient) {
         this.fluxerClient = client;
+    }
+
+    public setOnFluxerRecovered(cb: () => void) {
+        this.onFluxerRecovered = cb;
+    }
+
+    public setOnFluxerDown(cb: (count: number) => void) {
+        this.onFluxerDown = cb;
+    }
+
+    public resetFluxerDownCount() {
+        this.fluxerConsecutiveDowns = 0;
     }
 
     private async checkDiscordHealth(): Promise<HealthStatus> {
@@ -79,12 +95,20 @@ export default class HealthCheckService {
 
         const healthStatus = await this.checkFluxerHealth();
         if (healthStatus.healthy) {
+            this.fluxerConsecutiveDowns = 0;
             logger.info(`Fluxer health status: UP`);
+            if (this.lastFluxerHealthy === false) {
+                logger.info('Fluxer recovered');
+                this.onFluxerRecovered?.();
+            }
         } else {
+            this.fluxerConsecutiveDowns++;
             logger.warn(
-                `Fluxer health status: DOWN${healthStatus.message ? ` - ${healthStatus.message}` : ''}`
+                `Fluxer health status: DOWN${healthStatus.message ? ` - ${healthStatus.message}` : ''} (consecutive: ${this.fluxerConsecutiveDowns})`
             );
+            this.onFluxerDown?.(this.fluxerConsecutiveDowns);
         }
+        this.lastFluxerHealthy = healthStatus.healthy;
         await this.pushHealthStatus(this.fluxerPushUrl, healthStatus);
     }
 }

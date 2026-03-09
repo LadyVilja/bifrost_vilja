@@ -1,11 +1,11 @@
-import { Client, Events, Message, PartialMessage, TextChannel } from '@fluxerjs/core';
+import { Client, EmbedBuilder, Events, PartialMessage, TextChannel } from '@fluxerjs/core';
 import CommandRegistry from './commands/CommandRegistry';
 import PingFluxerCommandHandler from './commands/fluxer/handlers/PingFluxerCommandHandler';
 import { isCommandString, parseCommandString } from './commands/parseCommandString';
 import './utils/env';
 import logger from './utils/logging/logger';
 import FluxerCommandHandler from './commands/fluxer/FluxerCommandHandler';
-import { COMMAND_PREFIX } from './utils/env';
+import { COMMAND_PREFIX, FLUXER_TOKEN } from './utils/env';
 import GuildLinkFluxerCommandHandler from './commands/fluxer/handlers/GuildLinkFluxerCommandHandler';
 import GuildUnlinkFluxerCommandHandler from './commands/fluxer/handlers/GuildUnlinkFluxerCommandHandler';
 import { LinkService } from './services/LinkService';
@@ -22,7 +22,7 @@ import FluxerMessageTransformer from './services/messageTransformer/FluxerMessag
 import StatsFluxerCommandHandler from './commands/fluxer/handlers/StatsFluxerCommandHandler';
 import DiscordStatsService from './services/statsService/DiscordStatsService';
 import FluxerStatsService from './services/statsService/FluxerStatsService';
-import { createFluxerErrorReply } from './utils/embeds';
+import { EmbedColors } from './utils/embeds';
 
 const startFluxerClient = async ({
     linkService,
@@ -100,10 +100,6 @@ const startFluxerClient = async ({
     client.once(Events.Ready, () => {
         logger.info('Fluxer bot is ready!');
         logger.info(`Fluxer bot is in ${client.guilds.size} guilds`);
-
-        setInterval(async () => {
-            await healthCheckService.pushFluxerHealthStatus();
-        }, 30_000);
     });
 
     client.on(Events.Error, (error) => {
@@ -170,7 +166,7 @@ const startFluxerClient = async ({
         }
     });
 
-    client.on(Events.MessageUpdate, async (oldMessage, newMessage) => {
+    client.on(Events.MessageUpdate, async (_oldMessage, newMessage) => {
         const linkedMessage = await linkService.getMessageLinkByFluxerMessageId(newMessage.id);
         if (!linkedMessage) return;
 
@@ -225,11 +221,14 @@ const startFluxerClient = async ({
             const { command, args } = parseCommandString(message.content, COMMAND_PREFIX);
             const handler = commandRegistry.getCommandHandler(command);
             if (!handler) {
-                await message.reply(
-                    createFluxerErrorReply(
-                        `Unknown command: \`${command}\`\nUse \`${COMMAND_PREFIX}help\` to see available commands.`
-                    )
-                );
+                await message.reply({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setTitle('Unknown Command')
+                            .setDescription(`Unknown command: \`${command}\`\nUse \`${COMMAND_PREFIX}help\` to see available commands.`)
+                            .setColor(EmbedColors.Error),
+                    ],
+                });
                 return;
             }
 
@@ -259,7 +258,7 @@ const startFluxerClient = async ({
         }
     });
 
-    await client.login(process.env.FLUXER_BOT_TOKEN!);
+    await client.login(FLUXER_TOKEN);
 
     return client;
 };

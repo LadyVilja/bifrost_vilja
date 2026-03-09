@@ -13,10 +13,10 @@ import HealthCheckService from './services/HealthCheckService';
 import { LinkService } from './services/LinkService';
 import { WebhookService } from './services/WebhookService';
 import {
-    DISCORD_APPLICATION_ID,
-    DISCORD_HEALTH_PUSH_URL,
-    FLUXER_APPLICATION_ID,
-    FLUXER_HEALTH_PUSH_URL,
+    DISCORD_APP_ID,
+    DISCORD_HEALTH_URL,
+    FLUXER_APP_ID,
+    FLUXER_HEALTH_URL,
 } from './utils/env';
 import {
     generateDiscordBotInviteLink,
@@ -30,8 +30,8 @@ const main = async () => {
     await initDatabase();
 
     const healthCheckService = new HealthCheckService(
-        DISCORD_HEALTH_PUSH_URL || null,
-        FLUXER_HEALTH_PUSH_URL || null
+        DISCORD_HEALTH_URL || null,
+        FLUXER_HEALTH_URL || null
     );
 
     const guildLinkRepo = new SequelizeGuildLinkRepository();
@@ -53,13 +53,72 @@ const main = async () => {
     const discordStatsService = new DiscordStatsService();
     const fluxerStatsService = new FluxerStatsService();
 
+    const FLUXER_DOWN_THRESHOLD = 5;        // 5 × 30s = 2.5 min before restart
+    const FLUXER_MAX_RESTARTS = 3;          // restart up to N times, then long backoff
+    const FLUXER_BACKOFF_MS = 20 * 60_000; // 20 min wait after exhausting restarts
+
+    const fluxerArgs = {
+        linkService,
+        webhookService,
+        healthCheckService,
+        discordEntityResolver,
+        fluxerEntityResolver,
+        discordStatsService,
+        fluxerStatsService,
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const fluxerClientRef: { current: any } = { current: null };
+    let fluxerRestartAttempts = 0;
+    let fluxerRestartState: 'idle' | 'restarting' | 'backoff' = 'idle';
+
+    const doFluxerRestart = async () => {
+        fluxerRestartState = 'restarting';
+        fluxerRestartAttempts++;
+        logger.warn(`[Fluxer] Restarting client (attempt #${fluxerRestartAttempts})...`);
+        healthCheckService.resetFluxerDownCount();
+        try { fluxerClientRef.current?.destroy?.(); } catch {}
+        await new Promise(r => setTimeout(r, 3_000));
+        try {
+            fluxerClientRef.current = await startFluxerClient(fluxerArgs);
+            logger.info(`[Fluxer] Client restarted successfully (attempt #${fluxerRestartAttempts})`);
+            fluxerRestartState = 'idle';
+        } catch (err) {
+            logger.error(`[Fluxer] Restart #${fluxerRestartAttempts} failed:`, err);
+            enterFluxerBackoff();
+        }
+    };
+
+    const enterFluxerBackoff = () => {
+        fluxerRestartState = 'backoff';
+        healthCheckService.resetFluxerDownCount();
+        logger.warn(`[Fluxer] Entering ${FLUXER_BACKOFF_MS / 60_000}-minute backoff before next restart`);
+        setTimeout(() => {
+            fluxerRestartState = 'idle';
+            doFluxerRestart().catch((err) => logger.error('[Fluxer] Restart after backoff failed:', err));
+        }, FLUXER_BACKOFF_MS);
+    };
+
+    healthCheckService.setOnFluxerRecovered(() => {
+        fluxerRestartAttempts = 0;
+    });
+    healthCheckService.setOnFluxerDown((count) => {
+        if (fluxerRestartState !== 'idle') return;
+        if (count < FLUXER_DOWN_THRESHOLD) return;
+        if (fluxerRestartAttempts >= FLUXER_MAX_RESTARTS) {
+            enterFluxerBackoff();
+            return;
+        }
+        doFluxerRestart().catch((err) => logger.error('[Fluxer] Restart error:', err));
+    });
+
     const perms = '536947712';
-    const discordBotInviteLink = generateDiscordBotInviteLink(DISCORD_APPLICATION_ID, perms);
+    const discordBotInviteLink = generateDiscordBotInviteLink(DISCORD_APP_ID, perms);
     logger.info(`Discord Bot Invite Link: ${discordBotInviteLink}`);
-    const fluxerBotInviteLink = generateFluxerBotInviteLink(FLUXER_APPLICATION_ID, perms);
+    const fluxerBotInviteLink = generateFluxerBotInviteLink(FLUXER_APP_ID, perms);
     logger.info(`Fluxer Bot Invite Link: ${fluxerBotInviteLink}`);
 
-    await Promise.all([
+    const [, initialFluxerClient] = await Promise.all([
         startDiscordClient({
             linkService,
             webhookService,
@@ -69,16 +128,13 @@ const main = async () => {
             discordStatsService,
             fluxerStatsService,
         }),
-        startFluxerClient({
-            linkService,
-            webhookService,
-            healthCheckService,
-            discordEntityResolver,
-            fluxerEntityResolver,
-            discordStatsService,
-            fluxerStatsService,
-        }),
+        startFluxerClient(fluxerArgs),
     ]);
+    fluxerClientRef.current = initialFluxerClient;
+
+    setInterval(async () => {
+        await healthCheckService.pushFluxerHealthStatus();
+    }, 30_000);
 
     logger.info('Both Discord and Fluxer clients have started successfully.');
 };
