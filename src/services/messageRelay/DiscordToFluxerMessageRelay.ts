@@ -2,10 +2,38 @@ import { Message, MessageType, OmitPartialGroupDMChannel } from 'discord.js';
 import MessageRelay from './MessageRelay';
 import logger from '../../utils/logging/logger';
 import { formatJoinMessage } from '../../utils/formatJoinMessage';
+import FluxerEntityResolver from '../entityResolver/FluxerEntityResolver';
+import { LinkService } from '../LinkService';
+import { WebhookMessageData, WebhookService } from '../WebhookService';
+import MessageTransformer from '../messageTransformer/MessageTransformer';
 
 export default class DiscordToFluxerMessageRelay extends MessageRelay<
     OmitPartialGroupDMChannel<Message<boolean>>
 > {
+    private readonly fluxerEntityResolver: FluxerEntityResolver;
+
+    constructor({
+        linkService,
+        webhookService,
+        messageTransformer,
+        fluxerEntityResolver,
+    }: {
+        linkService: LinkService;
+        webhookService: WebhookService;
+        messageTransformer: MessageTransformer<
+            OmitPartialGroupDMChannel<Message<boolean>>,
+            WebhookMessageData
+        >;
+        fluxerEntityResolver: FluxerEntityResolver;
+    }) {
+        super({
+            linkService,
+            webhookService,
+            messageTransformer,
+        });
+        this.fluxerEntityResolver = fluxerEntityResolver;
+    }
+
     public async relayMessage(
         message: OmitPartialGroupDMChannel<Message<boolean>>
     ): Promise<void> {
@@ -17,6 +45,10 @@ export default class DiscordToFluxerMessageRelay extends MessageRelay<
                 message.channelId
             );
         if (!linkedChannel) return;
+        const guildLink = await linkService.getGuildLinkById(
+            linkedChannel.guildLinkId
+        );
+        if (!guildLink) return;
 
         try {
             const webhook = await webhookService.getFluxerWebhook(
@@ -42,8 +74,14 @@ export default class DiscordToFluxerMessageRelay extends MessageRelay<
                 return;
             }
 
-            const msg =
-                await this.getMessageTransformer().transformMessage(message);
+            const fluxerEmojis = await this.fluxerEntityResolver.fetchEmojis(
+                guildLink.fluxerGuildId
+            );
+
+            const msg = await this.getMessageTransformer().transformMessage(
+                message,
+                fluxerEmojis
+            );
 
             const { messageId: webhookMessageId } =
                 await webhookService.sendMessageViaFluxerWebhook(webhook, msg);

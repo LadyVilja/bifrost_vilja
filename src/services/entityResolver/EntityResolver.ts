@@ -1,9 +1,13 @@
-export default interface EntityResolver<G, C, M> {
-    fetchGuild(guildId: string): Promise<G | null>;
-    fetchChannel(guildId: string | G, channelId: string): Promise<C | null>;
+export default interface EntityResolver<Guild, Channel, Message, Emoji> {
+    fetchGuild(guildId: string): Promise<Guild | null>;
+    fetchChannel(
+        guildId: string | Guild,
+        channelId: string
+    ): Promise<Channel | null>;
     fetchMessage(
-        guildId: string | G,
-        channelId: string | C,
+        guildId: string | Guild,
+        channelId: string | Channel,
         messageId: string
-    ): Promise<M>;
+    ): Promise<Message>;
+    fetchEmojis(guildId: string | Guild): Promise<Emoji[]>;
 }

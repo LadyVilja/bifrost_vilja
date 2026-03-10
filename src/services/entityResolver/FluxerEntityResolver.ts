@@ -1,10 +1,11 @@
-import { Channel, Client, Guild, Message } from '@fluxerjs/core';
+import { Channel, Client, Guild, GuildEmoji, Message } from '@fluxerjs/core';
 import EntityResolver from '../entityResolver/EntityResolver';
 
 export default class FluxerEntityResolver implements EntityResolver<
     Guild,
     Channel,
-    Message
+    Message,
+    GuildEmoji
 > {
     private fluxerClient: Client | null = null;
 
@@ -72,5 +73,19 @@ export default class FluxerEntityResolver implements EntityResolver<
         }
 
         return await channel.messages.fetch(messageId);
+    }
+
+    async fetchEmojis(guildId: string | Guild): Promise<GuildEmoji[]> {
+        const guild =
+            typeof guildId === 'string'
+                ? await this.fetchGuild(guildId)
+                : guildId;
+
+        if (!guild) {
+            throw new Error('Fluxer guild not found');
+        }
+
+        const emojisColl = await guild.fetchEmojis();
+        return emojisColl.map((e) => e);
     }
 }

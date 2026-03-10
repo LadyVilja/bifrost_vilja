@@ -5,10 +5,11 @@ import { sanitizeMentions } from '../../utils/sanitizeMentions';
 import { buildDiscordStickerUrl } from '../../utils/buildStickerUrl';
 import { getPollMessage } from '../../utils/pollMessageFormatter';
 import WebhookEmbed from '../WebhookEmbed';
+import { GeneralEmoji } from '../../utils/emojis';
 
 type DiscordMessage = OmitPartialGroupDMChannel<Message<boolean>>;
 
-export default class DiscordMessageTransformer implements MessageTransformer<
+export default class DiscordMessageTransformer extends MessageTransformer<
     DiscordMessage,
     WebhookMessageData
 > {
@@ -50,11 +51,14 @@ export default class DiscordMessageTransformer implements MessageTransformer<
     }
 
     public async transformMessage(
-        message: DiscordMessage
+        message: DiscordMessage,
+        fluxerEmojis: GeneralEmoji[] = []
     ): Promise<WebhookMessageData> {
-        // console.log('Transforming Discord message:', message.toJSON());
-
         const sanitizedContent = this.sanitizeContent(message);
+        const emojiReplacedContent = this.replaceEmojis(
+            sanitizedContent,
+            fluxerEmojis
+        );
 
         const attachments = message.attachments.map((attachment) => ({
             url: attachment.url,
@@ -87,7 +91,7 @@ export default class DiscordMessageTransformer implements MessageTransformer<
                       .filter((t): t is string => !!t),
                   message.poll!.expiresTimestamp!
               )
-            : sanitizedContent;
+            : emojiReplacedContent;
 
         const embeds: WebhookEmbed[] = message.embeds.map((embed) =>
             WebhookEmbed.fromDiscordEmbed(embed)

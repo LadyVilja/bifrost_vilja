@@ -2,8 +2,33 @@ import { Message } from '@fluxerjs/core';
 import MessageRelay from './MessageRelay';
 import logger from '../../utils/logging/logger';
 import { formatJoinMessage } from '../../utils/formatJoinMessage';
+import DiscordEntityResolver from '../entityResolver/DiscordEntityResolver';
+import { WebhookMessageData, WebhookService } from '../WebhookService';
+import MessageTransformer from '../messageTransformer/MessageTransformer';
+import { LinkService } from '../LinkService';
 
 export default class FluxerToDiscordMessageRelay extends MessageRelay<Message> {
+    private readonly discordEntityResolver: DiscordEntityResolver;
+
+    constructor({
+        linkService,
+        webhookService,
+        messageTransformer,
+        discordEntityResolver,
+    }: {
+        linkService: LinkService;
+        webhookService: WebhookService;
+        messageTransformer: MessageTransformer<Message, WebhookMessageData>;
+        discordEntityResolver: DiscordEntityResolver;
+    }) {
+        super({
+            linkService,
+            webhookService,
+            messageTransformer,
+        });
+        this.discordEntityResolver = discordEntityResolver;
+    }
+
     public async relayMessage(message: Message): Promise<void> {
         const linkService = this.getLinkService();
         const webhookService = this.getWebhookService();
@@ -12,6 +37,10 @@ export default class FluxerToDiscordMessageRelay extends MessageRelay<Message> {
             message.channelId
         );
         if (!linkedChannel) return;
+        const guildLink = await linkService.getGuildLinkById(
+            linkedChannel.guildLinkId
+        );
+        if (!guildLink) return;
 
         try {
             const webhook = await webhookService.getDiscordWebhook(
@@ -39,8 +68,14 @@ export default class FluxerToDiscordMessageRelay extends MessageRelay<Message> {
                 return;
             }
 
-            const msg =
-                await this.getMessageTransformer().transformMessage(message);
+            const discordEmojis = await this.discordEntityResolver.fetchEmojis(
+                guildLink.discordGuildId
+            );
+
+            const msg = await this.getMessageTransformer().transformMessage(
+                message,
+                discordEmojis
+            );
 
             const { messageId: webhookMessageId } =
                 await webhookService.sendMessageViaDiscordWebhook(webhook, msg);

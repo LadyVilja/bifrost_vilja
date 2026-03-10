@@ -4,8 +4,9 @@ import { WebhookMessageData } from '../WebhookService';
 import { breakMentions, sanitizeMentions } from '../../utils/sanitizeMentions';
 import { buildFluxerStickerUrl } from '../../utils/buildStickerUrl';
 import WebhookEmbed from '../WebhookEmbed';
+import { GeneralEmoji } from '../../utils/emojis';
 
-export default class FluxerMessageTransformer implements MessageTransformer<
+export default class FluxerMessageTransformer extends MessageTransformer<
     Message,
     WebhookMessageData
 > {
@@ -30,9 +31,14 @@ export default class FluxerMessageTransformer implements MessageTransformer<
     }
 
     public async transformMessage(
-        message: Message
+        message: Message,
+        discordEmojis: GeneralEmoji[] = []
     ): Promise<WebhookMessageData> {
         const sanitizedContent = this.sanitizeContent(message);
+        const emojiReplacedContent = this.replaceEmojis(
+            sanitizedContent,
+            discordEmojis
+        );
 
         const attachments = message.attachments
             .filter(
@@ -86,7 +92,7 @@ export default class FluxerMessageTransformer implements MessageTransformer<
         }
 
         return {
-            content: sanitizedContent,
+            content: emojiReplacedContent,
             username: message.author.username,
             avatarURL: message.author.avatarURL() || '',
             attachments: attachments,

@@ -71,6 +71,7 @@ const startDiscordClient = async ({
         linkService,
         webhookService,
         messageTransformer,
+        fluxerEntityResolver,
     });
 
     const commandRegistry = new CommandRegistry<DiscordCommandHandler>();
@@ -300,7 +301,6 @@ const startDiscordClient = async ({
             message.channel.isTextBased() &&
             !message.channel.isDMBased() &&
             !message.channel.isThread();
-
         if (
             isValidWebhookChannel &&
             !isCommandString(message.content, COMMAND_PREFIX)

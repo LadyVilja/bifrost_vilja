@@ -9,10 +9,12 @@
 
 - Link channels between Discord and Fluxer
 - Sync messages between linked channels
-- Support for messgages, replies, attachements, stickers, embeds, join messages and polls
+- Support for messages, replies, attachments, emojis¹, stickers, embeds, join messages and polls
 - Bridge messages using webhooks
 - Easy setup using our hosted bot or self-hosting with Docker
 - Customizable bot prefix and settings
+
+¹ Emoji support is limited to custom emojis from the linked Discord server and standard Unicode emojis. Emojis from the servers must have matching names to be replaced correctly.
 
 ## Community
 
