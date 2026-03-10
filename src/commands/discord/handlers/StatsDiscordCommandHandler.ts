@@ -58,7 +58,7 @@ export default class StatsDiscordCommandHandler extends DiscordCommandHandler {
         await message.reply({
             embeds: [
                 new EmbedBuilder()
-                    .setTitle('Bifrost Stats')
+                    .setTitle('Bifröst Stats')
                     .addFields(
                         {
                             name: 'Fluxer Guilds',

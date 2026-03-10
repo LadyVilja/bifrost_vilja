@@ -54,7 +54,7 @@ export default class StatsFluxerCommandHandler extends FluxerCommandHandler {
         await message.reply({
             embeds: [
                 new EmbedBuilder()
-                    .setTitle('Bifrost Stats')
+                    .setTitle('Bifröst Stats')
                     .addFields(
                         {
                             name: 'Fluxer Guilds',

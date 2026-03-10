@@ -20,7 +20,7 @@ export default class HelpDiscordCommandHandler extends DiscordCommandHandler {
         await message.reply({
             embeds: [
                 new EmbedBuilder()
-                    .setTitle('Bifrost Help')
+                    .setTitle('Bifröst Help')
                     .setDescription(getHelpMessage('discord'))
                     .setColor(EmbedColors.Info)
                     .setFooter(this.footer(message))

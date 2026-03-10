@@ -18,7 +18,7 @@ export default class HelpFluxerCommandHandler extends FluxerCommandHandler {
         await message.reply({
             embeds: [
                 new EmbedBuilder()
-                    .setTitle('Bifrost Help')
+                    .setTitle('Bifröst Help')
                     .setDescription(getHelpMessage('fluxer'))
                     .setColor(EmbedColors.Info)
                     .setFooter(this.footer(message))
