@@ -41,8 +41,8 @@ export default class StatsDiscordCommandHandler extends DiscordCommandHandler {
         const discordGuildCount = this.discordStatsService.getGuildCount();
         const fluxerUserCount = this.fluxerStatsService.getUserCount();
         const discordUserCount = this.discordStatsService.getUserCount();
-        const discordPing = this.discordStatsService.getPing();
-        const fluxerPing = this.fluxerStatsService.getPing();
+        const discordPing = await this.discordStatsService.getPing();
+        const fluxerPing = await this.fluxerStatsService.getPing();
         const readableUptime = formatDuration(process.uptime());
         const usedHeap = getHeapUsageMB();
 
