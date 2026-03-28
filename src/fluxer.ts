@@ -32,6 +32,7 @@ import StatsFluxerCommandHandler from './commands/fluxer/handlers/StatsFluxerCom
 import DiscordStatsService from './services/statsService/DiscordStatsService';
 import FluxerStatsService from './services/statsService/FluxerStatsService';
 import { EmbedColors } from './utils/embeds';
+import { DbStatsService } from './services/DbStatsService';
 
 const startFluxerClient = async ({
     linkService,
@@ -41,6 +42,7 @@ const startFluxerClient = async ({
     fluxerEntityResolver,
     discordStatsService,
     fluxerStatsService,
+    dbStatsService,
 }: {
     linkService: LinkService;
     webhookService: WebhookService;
@@ -49,6 +51,7 @@ const startFluxerClient = async ({
     fluxerEntityResolver: FluxerEntityResolver;
     discordStatsService: DiscordStatsService;
     fluxerStatsService: FluxerStatsService;
+    dbStatsService: DbStatsService;
 }): Promise<Client> => {
     const client = new Client({
         intents: 0,
@@ -88,7 +91,8 @@ const startFluxerClient = async ({
         new StatsFluxerCommandHandler(
             client,
             discordStatsService,
-            fluxerStatsService
+            fluxerStatsService,
+            dbStatsService
         )
     );
     commandRegistry.registerCommand(

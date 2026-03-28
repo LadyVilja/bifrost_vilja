@@ -23,4 +23,6 @@ export interface MessageLinkRepository {
     deleteByGuildLinkId(guildLinkId: string): Promise<void>;
 
     deleteByChannelLinkId(channelLinkId: string): Promise<void>;
+
+    getMessageLinksCount(): Promise<number>;
 }

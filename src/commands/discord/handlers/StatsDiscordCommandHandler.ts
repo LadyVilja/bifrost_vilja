@@ -16,6 +16,7 @@ import {
     generateDiscordBotInviteLink,
     generateFluxerBotInviteLink,
 } from '../../../utils/generateBotInvite';
+import { DbStatsService } from '../../../services/DbStatsService';
 
 export default class StatsDiscordCommandHandler extends DiscordCommandHandler {
     constructor(
@@ -23,7 +24,8 @@ export default class StatsDiscordCommandHandler extends DiscordCommandHandler {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         private discordStatsService: StatsService<any>,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        private fluxerStatsService: StatsService<any>
+        private fluxerStatsService: StatsService<any>,
+        private dbStatsService: DbStatsService
     ) {
         super(client);
     }

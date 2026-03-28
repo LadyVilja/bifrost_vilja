@@ -92,4 +92,8 @@ export class SequelizeChannelLinkRepository implements ChannelLinkRepository {
             where: { guildLinkId },
         });
     }
+
+    async getChannelLinksCount(): Promise<number> {
+        return await ChannelLinkModel.count();
+    }
 }

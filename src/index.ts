@@ -25,6 +25,7 @@ import {
 import logger from './utils/logging/logger';
 import DiscordStatsService from './services/statsService/DiscordStatsService';
 import FluxerStatsService from './services/statsService/FluxerStatsService';
+import { DbStatsService } from './services/DbStatsService';
 
 const main = async () => {
     await initDatabase();
@@ -58,6 +59,7 @@ const main = async () => {
     const fluxerEntityResolver = new FluxerEntityResolver();
     const discordStatsService = new DiscordStatsService();
     const fluxerStatsService = new FluxerStatsService();
+    const dbStatsService = new DbStatsService(channelLinkRepo, messageLinkRepo);
 
     const FLUXER_DOWN_THRESHOLD = 5; // 5 × 30s = 2.5 min before restart
     const FLUXER_MAX_RESTARTS = 3; // restart up to N times, then long backoff
@@ -71,6 +73,7 @@ const main = async () => {
         fluxerEntityResolver,
         discordStatsService,
         fluxerStatsService,
+        dbStatsService,
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -156,6 +159,7 @@ const main = async () => {
             fluxerEntityResolver,
             discordStatsService,
             fluxerStatsService,
+            dbStatsService,
         }),
         startFluxerClient(fluxerArgs),
     ]);

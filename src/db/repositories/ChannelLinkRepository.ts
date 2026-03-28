@@ -29,4 +29,6 @@ export interface ChannelLinkRepository {
     deleteById(id: string): Promise<void>;
 
     deleteByGuildLinkId(guildLinkId: string): Promise<void>;
+
+    getChannelLinksCount(): Promise<number>;
 }

@@ -14,6 +14,7 @@ import {
     generateDiscordBotInviteLink,
     generateFluxerBotInviteLink,
 } from '../../../utils/generateBotInvite';
+import { DbStatsService } from '../../../services/DbStatsService';
 
 export default class StatsFluxerCommandHandler extends FluxerCommandHandler {
     constructor(
@@ -21,7 +22,8 @@ export default class StatsFluxerCommandHandler extends FluxerCommandHandler {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         private discordStatsService: StatsService<any>,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        private fluxerStatsService: StatsService<any>
+        private fluxerStatsService: StatsService<any>,
+        private dbStatsService: DbStatsService
     ) {
         super(client);
     }
@@ -51,6 +53,8 @@ export default class StatsFluxerCommandHandler extends FluxerCommandHandler {
                 : `\`${GIT_COMMIT.slice(0, 7)}\``
             : 'N/A';
 
+        const dbStats = await this.dbStatsService.getStats();
+
         await message.reply({
             embeds: [
                 new EmbedBuilder()
@@ -74,6 +78,16 @@ export default class StatsFluxerCommandHandler extends FluxerCommandHandler {
                         {
                             name: 'Discord Users',
                             value: `${isNaN(discordUserCount) ? 'N/A' : discordUserCount}`,
+                            inline: true,
+                        },
+                        {
+                            name: 'Channel Links',
+                            value: `${dbStats.channelLinksCount}`,
+                            inline: true,
+                        },
+                        {
+                            name: 'Message Links',
+                            value: `${dbStats.messageLinksCount}`,
                             inline: true,
                         },
                         {

@@ -4,6 +4,7 @@ import { MessageLinkRepository } from '../repositories/MessageLinkRepository';
 
 export class CachedMessageLinkRepository implements MessageLinkRepository {
     private cache: LRUCache<string, MessageLink>;
+    private metaCache: LRUCache<string, number>;
 
     constructor(
         private readonly repository: MessageLinkRepository,
@@ -11,6 +12,10 @@ export class CachedMessageLinkRepository implements MessageLinkRepository {
     ) {
         this.cache = new LRUCache<string, MessageLink>({
             max: maxEntries,
+        });
+        this.metaCache = new LRUCache<string, number>({
+            max: 100,
+            ttl: 60_000,
         });
     }
 
@@ -47,6 +52,8 @@ export class CachedMessageLinkRepository implements MessageLinkRepository {
         if (created) {
             this.primeCache(created);
         }
+
+        this.metaCache.delete('count');
     }
 
     async deleteMessageLink(id: string): Promise<void> {
@@ -59,6 +66,7 @@ export class CachedMessageLinkRepository implements MessageLinkRepository {
         this.cache.delete(this.idKey(existing.id));
         this.cache.delete(this.discordKey(existing.discordMessageId));
         this.cache.delete(this.fluxerKey(existing.fluxerMessageId));
+        this.metaCache.delete('count');
     }
 
     async deleteByGuildLinkId(guildLinkId: string): Promise<void> {
@@ -72,6 +80,7 @@ export class CachedMessageLinkRepository implements MessageLinkRepository {
                 this.cache.delete(this.fluxerKey(value.fluxerMessageId));
             }
         }
+        this.metaCache.delete('count');
     }
 
     async deleteByChannelLinkId(channelLinkId: string): Promise<void> {
@@ -85,6 +94,7 @@ export class CachedMessageLinkRepository implements MessageLinkRepository {
                 this.cache.delete(this.fluxerKey(value.fluxerMessageId));
             }
         }
+        this.metaCache.delete('count');
     }
 
     async getMessageLinkById(id: string): Promise<MessageLink | null> {
@@ -133,6 +143,15 @@ export class CachedMessageLinkRepository implements MessageLinkRepository {
 
         this.primeCache(result);
         return result;
+    }
+
+    async getMessageLinksCount(): Promise<number> {
+        const cached = this.metaCache.get('count');
+        if (cached !== undefined) return cached;
+
+        const count = await this.repository.getMessageLinksCount();
+        this.metaCache.set('count', count);
+        return count;
     }
 
     private primeCache(entity: MessageLink) {

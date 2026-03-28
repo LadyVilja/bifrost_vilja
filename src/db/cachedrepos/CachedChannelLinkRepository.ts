@@ -28,6 +28,10 @@ export class CachedChannelLinkRepository implements ChannelLinkRepository {
         return `fluxer:${fluxerChannelId}`;
     }
 
+    private countKey() {
+        return 'channel_links:count';
+    }
+
     async create(data: {
         guildLinkId: string;
         discordChannelId: string;
@@ -47,6 +51,7 @@ export class CachedChannelLinkRepository implements ChannelLinkRepository {
         this.cache.set(this.fluxerKey(created.fluxerChannelId), created);
 
         this.cache.del(this.guildAllKey(created.guildLinkId));
+        this.cache.del(this.countKey());
 
         return created;
     }
@@ -142,6 +147,7 @@ export class CachedChannelLinkRepository implements ChannelLinkRepository {
         this.cache.del(this.discordKey(existing.discordChannelId));
         this.cache.del(this.fluxerKey(existing.fluxerChannelId));
         this.cache.del(this.guildAllKey(existing.guildLinkId));
+        this.cache.del(this.countKey());
     }
 
     async deleteByGuildLinkId(guildLinkId: string): Promise<void> {
@@ -155,5 +161,17 @@ export class CachedChannelLinkRepository implements ChannelLinkRepository {
             this.cache.del(this.fluxerKey(link.fluxerChannelId));
         });
         this.cache.del(this.guildAllKey(guildLinkId));
+        this.cache.del(this.countKey());
+    }
+
+    async getChannelLinksCount(): Promise<number> {
+        const key = this.countKey();
+
+        const cached = this.cache.get<number>(key);
+        if (cached !== undefined) return cached;
+
+        const count = await this.repository.getChannelLinksCount();
+        this.cache.set(key, count);
+        return count;
     }
 }
