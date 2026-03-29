@@ -12,10 +12,10 @@ hero:
     actions:
         - theme: brand
           text: Add to Discord
-          link: https://discord.com/oauth2/authorize?client_id=1475436995697180845&permissions=536947712&integration_type=0&scope=bot
+          link: https://bifrost-bot.com/invite/discord
         - theme: brand
           text: Add to Fluxer
-          link: https://web.fluxer.app/oauth2/authorize?client_id=1475208219145040215&scope=bot&permissions=536947712
+          link: https://bifrost-bot.com/invite/fluxer
         - theme: alt
           text: Getting Started
           link: /guide/getting-started
