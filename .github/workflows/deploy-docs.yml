@@ -45,12 +45,13 @@ jobs:
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DOCS_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
+          echo "${{ secrets.DOCS_SSH_PRIVATE_KEY }}" > ~/.ssh/bifrost_docs_deploy_key
+          chmod 600 ~/.ssh/bifrost_docs_deploy_key
+          ssh-keygen -l -f ~/.ssh/bifrost_docs_deploy_key
           ssh-keyscan -H ${{ secrets.DOCS_SERVER_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy via rsync
         run: |
           rsync -rlptz --delete \
-            -e "ssh -i ~/.ssh/deploy_key" \
+            -e "ssh -i ~/.ssh/bifrost_docs_deploy_key" \
             ./dist/ deploy@${{ secrets.DOCS_SERVER_HOST }}:/var/www/bifrost-docs/
