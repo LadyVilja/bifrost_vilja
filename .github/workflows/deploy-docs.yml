@@ -54,4 +54,4 @@ jobs:
         run: |
           rsync -rlptz --delete \
             -e "ssh -i ~/.ssh/bifrost_docs_deploy_key" \
-            ./dist/ deploy@${{ secrets.DOCS_SERVER_HOST }}:/var/www/bifrost-docs/
+            ./dist/ ${{ secrets.DOCS_SSH_USER }}@${{ secrets.DOCS_SERVER_HOST }}:/var/www/bifrost-docs/
