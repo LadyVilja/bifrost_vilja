@@ -18,7 +18,7 @@
 
 ## Community
 
-Join out community Fluxer server for support, updates and to share your feedback: https://fluxer.gg/TN8FkpdQ
+Join out community Fluxer server for support, updates and to share your feedback: https://bifrost-bot.com/community/fluxer
 
 ## Docs
 
