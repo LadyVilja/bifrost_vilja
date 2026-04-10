@@ -1,0 +1,10 @@
+{
+  "database": {
+    "host": "localhost",
+    "user": "root",
+    "password": "password",
+    "database": "bifrost"
+  },
+  "discord": { "token": "PLACEHOLDER" },
+  "fluxer": { "token": "PLACEHOLDER" }
+}
