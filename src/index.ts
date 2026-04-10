@@ -1,3 +1,8 @@
+import http from 'http';
+http.createServer((_req, res) => {
+  res.writeHead(200);
+  res.end('Bifrost is active');
+}).listen(process.env.PORT || 8080);
 import { CachedChannelLinkRepository } from './db/cachedrepos/CachedChannelLinkRepository';
 import { CachedGuildLinkRepository } from './db/cachedrepos/CachedGuildLinkRepository';
 import { CachedMessageLinkRepository } from './db/cachedrepos/CachedMessageLinkRepository';
